@@ -8,10 +8,6 @@ import sys                  #Pour récuperer les arguments du programme
 from subprocess import call #Pour lancer sox et htk
 from platform import system #Pour connaitre l'environnement d'execution
 
-audioFileName = sys.argv[1] #Fichier audio
-transFileName = sys.argv[2] #Fichier de transcription
-configFile = sys.argv[3]    #Fichier de configuration HTK
-
 hasBeenConverted = False    #Indique si on a du convertir le fichier en .wav
 
 #Gestion de l'OS
@@ -24,26 +20,33 @@ elif (system() == 'Windows') :
 else :
     sys.exit("OS inconnu")
 
-audioName = path.splitext(path.basename(audioFileName))[0] #Nom du fichier audio sans extension
+def convertToMfcc(audioFileName, transFileName, configFile) :
     
-#Conversion en wav si besoin
-if (not(path.splitext(audioFileName)[1] is ".wav")) :
-    wavFileName = path.splitext(audioFileName)[0] + ".wav"
-    call("sox " + audioFileName + " " + wavFileName, shell = True)
-    audioFileName = wavFileName
-    hasBeenConverted = True
+    audioName = path.splitext(path.basename(audioFileName))[0] #Nom du fichier audio sans extension
+    
+    #Conversion en wav si besoin
+    if (not(path.splitext(audioFileName)[1] is ".wav")) :
+        wavFileName = path.splitext(audioFileName)[0] + ".wav"
+        call("sox " + audioFileName + " " + wavFileName, shell = True)
+        audioFileName = wavFileName
+        hasBeenConverted = True
 
-#Coupe de l'audio
-cutFileName = path.splitext(audioFileName)[0] + "_trimmed.wav"
-cutStm.cut(audioFileName, transFileName, cutFileName)
+    #Coupe de l'audio
+    cutFileName = path.splitext(audioFileName)[0] + "_trimmed.wav"
+    cutStm.cutStm(audioFileName, transFileName, cutFileName)
 
-#Génération des mfcc
-mfcFileName = path.splitext(audioFileName)[0] + ".mfcc"
-call("./HCopy -C " + configFile + " " + cutFileName + " " + mfcFileName, shell = True) 
+    #Génération des mfcc
+    mfcFileName = path.splitext(audioFileName)[0] + ".mfcc"
+    call("./HCopy -C " + configFile + " " + cutFileName + " " + mfcFileName, shell = True) 
 
-#Suppression des fichiers de transition
-if (linux) :
-    if (hasBeenConverted) :
-        call("rm " + wavFileName, shell = True)
-    call("rm " + cutFileName, shell = True)
-#elif (windows) :
+    #Suppression des fichiers de transition
+    if (linux) :
+        if (hasBeenConverted) :
+            call("rm " + wavFileName, shell = True)
+            call("rm " + cutFileName, shell = True)
+    #elif (windows) :
+
+
+if __name__ == '__main__':
+    convertToMfcc(sys.argv[1], sys.argv[2], sys.argv[3])
+
