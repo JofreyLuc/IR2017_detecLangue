@@ -39,7 +39,11 @@ cutStm.cut(audioFileName, transFileName, cutFileName)
 
 #Génération des mfcc
 mfcFileName = path.splitext(audioFileName)[0] + ".mfcc"
-call("./HCopy -C " + configFile + " " + cutFileName + " " + mfcFileName, shell = True) 
+if (linux) :
+	hCopyCall = "./HCopy"
+elif (windows)
+	hCopyCall = "HCopy"
+call(hCopyCall + configFile + " " + cutFileName + " " + mfcFileName, shell = True) 
 
 #Suppression des fichiers de transition
 if (linux) :
