@@ -4,6 +4,7 @@
 
 import cutStm               #Script de découpe des stm
 from os import path         #Pour couper l'extension de fichier
+from os import remove       #Pour supprimer des fichiers
 import sys                  #Pour récuperer les arguments du programme
 from subprocess import call #Pour lancer sox et htk
 from platform import system #Pour connaitre l'environnement d'execution
@@ -26,25 +27,23 @@ def convertToMfcc(audioFileName, transFileName, configFile) :
     
     #Conversion en wav si besoin
     if (not(path.splitext(audioFileName)[1] is ".wav")) :
-        wavFileName = path.splitext(audioFileName)[0] + ".wav"
+        wavFileName = audioName + ".wav"
         call("sox " + audioFileName + " " + wavFileName, shell = True)
-        audioFileName = wavFileName
+        audioName = wavFileName
         hasBeenConverted = True
 
     #Coupe de l'audio
-    cutFileName = path.splitext(audioFileName)[0] + "_trimmed.wav"
-    cutStm.cutStm(audioFileName, transFileName, cutFileName)
+    cutFileName = path.splitext(audioName)[0] + "_trimmed.wav"
+    cutStm.cutStm(audioName, transFileName, cutFileName)
 
     #Génération des mfcc
-    mfcFileName = path.splitext(audioFileName)[0] + ".mfcc"
+    mfcFileName = path.splitext(audioName)[0] + ".mfcc"
     call("./HCopy -C " + configFile + " " + cutFileName + " " + mfcFileName, shell = True) 
 
     #Suppression des fichiers de transition
-    if (linux) :
-        if (hasBeenConverted) :
-            call("rm " + wavFileName, shell = True)
-            call("rm " + cutFileName, shell = True)
-    #elif (windows) :
+    if (hasBeenConverted) :
+        remove(wavFileName)
+    remove(cutFileName)
 
 
 if __name__ == '__main__':
