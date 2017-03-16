@@ -2,29 +2,31 @@
 #Script pour couper le début et la fin de non-parole des fichiers stm
 #python3 cutStm.py audio.wav transcript.stm audio_trimmed.wav
 
-from os import path #Pour couper l'extension de fichier
-import sys #Pour récuperer les arguments du programme
-from subprocess import call #Pour lancer le bash sox
+from os import path         #Pour couper l'extension de fichier
+import sys                  #Pour récuperer les arguments du programme
+from subprocess import call #Pour lancer sox
 
 
-def cut(audioFileName, fileNameExt, cutFileName):
+def cut(audioFileName, transFileName, cutFileName):
 
-    fileName = path.splitext(path.basename(fileNameExt))[0] #Nom du stm sans extension
+    name = path.splitext(path.basename(transFileName))[0] #Nom du stm sans extension
 
-    f = open(fileNameExt, 'r')
+    #On ouvre le fichier, tant qu'on a pas une ligne de transcription (commencant par le nom de fichier) on lit en avancant
+    f = open(transFileName, 'r')
     currentLine = f.readline()
-    print(fileName)
-    while (currentLine.split()[0] != fileName) :
+    while (currentLine.split()[0] != name) :
         currentLine = f.readline()
 
+    #Si la première ligne est un silence/musique, on prend comme début le timestamp de fin; sinon le timestamp de début
     if (currentLine.split()[2] == "inter_segment_gap") :
         debut = currentLine.split()[4]
     else :
         debut = currentLine.split()[3]
 
+    #On va jusqu'à la fin du fichier en conservant la dernière ligne "correcte"
     nextLine = f.readline()
     while (nextLine != '') :
-        if (nextLine.split()[0] == fileName and nextLine.split()[2] != "inter_segment_gap") :
+        if (nextLine.split()[0] == name and nextLine.split()[2] != "inter_segment_gap") :
             currentLine = nextLine
         nextLine = f.readline()
 
@@ -37,4 +39,5 @@ def cut(audioFileName, fileNameExt, cutFileName):
     #On appelle le script bash qui va couper le fichier avec sox
     call("sox " + audioFileName + " " + cutFileName + " trim " + str(debut) + " " + str(duree), shell = True)
 
-cut(sys.argv[1], sys.argv[2], sys.argv[3])
+if __name__ == '__main__':
+    cut(sys.argv[1], sys.argv[2], sys.argv[3])

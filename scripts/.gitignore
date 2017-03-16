@@ -2,4 +2,5 @@
 *.sph
 *.stm
 *.mfcc
-__pycache_
+*.mlfmanu
+__pycache__
