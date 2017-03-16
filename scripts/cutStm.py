@@ -9,10 +9,11 @@ from subprocess import call #Pour lancer le bash sox
 
 def cut(audioFileName, fileNameExt, cutFileName):
 
-    fileName = path.splitext(fileNameExt)[0] #Nom du stm sans extension
+    fileName = path.splitext(path.basename(fileNameExt))[0] #Nom du stm sans extension
 
     f = open(fileNameExt, 'r')
     currentLine = f.readline()
+    print(fileName)
     while (currentLine.split()[0] != fileName) :
         currentLine = f.readline()
 

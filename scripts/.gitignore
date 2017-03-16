@@ -2,3 +2,4 @@
 *.sph
 *.stm
 *.mfcc
+__pycache_
