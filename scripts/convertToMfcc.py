@@ -38,9 +38,9 @@ def convertToMfcc(audioFileName, transFileName, configFile) :
 
     #Génération des mfcc
     mfcFileName = path.splitext(audioName)[0] + ".mfcc"
-	if (linux) :
+    if (linux) :
 	    hCopyCall = "./HCopy"
-    elif (windows)
+    elif (windows) :
 	    hCopyCall = "HCopy"
     call(hCopyCall + " -C " + configFile + " " + cutFileName + " " + mfcFileName, shell = True) 
 
