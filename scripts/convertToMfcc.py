@@ -30,7 +30,6 @@ if (path.splitext(audioFileName)[1] != ".wav") :
     call("sox " + audioFileName + " " + wavFileName, shell = True)
     audioFileName = wavFileName
     hasBeenConverted = True
-    
 
 #Coupe de l'audio
 cutFileName = path.splitext(audioFileName)[0] + "_trimmed.wav"
@@ -41,10 +40,8 @@ mfcFileName = path.splitext(audioFileName)[0] + ".mfcc"
 call("./HCopy -C " + configFile + " " + cutFileName + " " + mfcFileName, shell = True) 
 
 #Suppression des fichiers de transition
-
 if (linux) :
     if (hasBeenConverted) :
         call("rm " + wavFileName, shell = True)
     call("rm " + cutFileName, shell = True)
 #elif (windows) :
-    #whatevs

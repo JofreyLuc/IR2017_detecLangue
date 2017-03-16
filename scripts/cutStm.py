@@ -30,13 +30,13 @@ def cut(audioFileName, transFileName, cutFileName):
             currentLine = nextLine
         nextLine = f.readline()
 
-    fin = currentLine.split()[4]
-        
+    #On prend la fin de la dernière phrase et on calcule la durée totale à conserver
+    fin = currentLine.split()[4]        
     duree = float(fin) - float(debut)
     
     f.close()
 
-    #On appelle le script bash qui va couper le fichier avec sox
+    #On coupe le fichier avec sox
     call("sox " + audioFileName + " " + cutFileName + " trim " + str(debut) + " " + str(duree), shell = True)
 
 if __name__ == '__main__':
