@@ -1,6 +1,11 @@
+#Script pour transformer un fichier audio en .mfcc
+#python3 audio.sph transcript.stm confightk
+
+import cuttingEnglish
 import os
 import sys
 from subprocess import call
+from subprocess import Popen
 
 audioFileName = sys.argv[1]
 transFileName = sys.argv[2]
@@ -13,7 +18,8 @@ if (os.path.splitext(audioFileName)[1] != ".wav") :
 
 #Coupe de l'audio
 cutFileName = os.path.splitext(audioFileName)[0] + "_trimmed.wav"
-call("python3 cuttingEnglish.py " + transFileName + " " + audioFileName + " " + cutFileName, shell = True) 
+call("python3 cuttingEnglish.py " + transFileName + " " + audioFileName + " " + cutFileName, shell = True)
+
 
 #Génération des mfcc
 configFile = sys.argv[3]
