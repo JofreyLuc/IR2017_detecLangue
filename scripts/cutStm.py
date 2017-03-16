@@ -9,16 +9,16 @@ from subprocess import call #Pour lancer sox
 
 def cut(audioFileName, transFileName, cutFileName):
 
-    name = path.splitext(path.basename(transFileName))[0] #Nom du stm sans extension
+    transName = path.splitext(path.basename(transFileName))[0] #Nom du stm sans extension
 
     #On ouvre le fichier, tant qu'on a pas une ligne de transcription (commencant par le nom de fichier) on lit en avancant
     f = open(transFileName, 'r')
     currentLine = f.readline()
-    while (currentLine.split()[0] != name) :
+    while (currentLine.split()[0] != transName) :
         currentLine = f.readline()
 
     #Si la première ligne est un silence/musique, on prend comme début le timestamp de fin; sinon le timestamp de début
-    if (currentLine.split()[2] == "inter_segment_gap") :
+    if (currentLine.split()[2] is "inter_segment_gap") :
         debut = currentLine.split()[4]
     else :
         debut = currentLine.split()[3]
@@ -26,7 +26,7 @@ def cut(audioFileName, transFileName, cutFileName):
     #On va jusqu'à la fin du fichier en conservant la dernière ligne "correcte"
     nextLine = f.readline()
     while (nextLine != '') :
-        if (nextLine.split()[0] == name and nextLine.split()[2] != "inter_segment_gap") :
+        if (nextLine.split()[0] is transName and not(nextLine.split()[2] is "inter_segment_gap")) :
             currentLine = nextLine
         nextLine = f.readline()
 

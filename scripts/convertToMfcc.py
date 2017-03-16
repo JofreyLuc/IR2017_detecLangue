@@ -24,8 +24,10 @@ elif (system() == 'Windows') :
 else :
     sys.exit("OS inconnu")
 
+audioName = path.splitext(path.basename(audioFileName))[0] #Nom du fichier audio sans extension
+    
 #Conversion en wav si besoin
-if (path.splitext(audioFileName)[1] != ".wav") :
+if (not(path.splitext(audioFileName)[1] is ".wav")) :
     wavFileName = path.splitext(audioFileName)[0] + ".wav"
     call("sox " + audioFileName + " " + wavFileName, shell = True)
     audioFileName = wavFileName
