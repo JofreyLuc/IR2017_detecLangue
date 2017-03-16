@@ -7,7 +7,7 @@ import sys                  #Pour récuperer les arguments du programme
 from subprocess import call #Pour lancer sox
 
 
-def cut(audioFileName, transFileName, cutFileName):
+def cutStm(audioFileName, transFileName, cutFileName):
 
     transName = path.splitext(path.basename(transFileName))[0] #Nom du stm sans extension
 
@@ -40,4 +40,4 @@ def cut(audioFileName, transFileName, cutFileName):
     call("sox " + audioFileName + " " + cutFileName + " trim " + str(debut) + " " + str(duree), shell = True)
 
 if __name__ == '__main__':
-    cut(sys.argv[1], sys.argv[2], sys.argv[3])
+    cutStm(sys.argv[1], sys.argv[2], sys.argv[3])
