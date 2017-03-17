@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #Script pour transformer un fichier audio en .mfcc
-#python3 audio.* transcript.stm confightk
+#python3 convertToMfcc.py audio.* transcript.stm confightk
 
 import cutStm               #Script de découpe des stm
 import cutMlfmanu           #Script de découpe des mlfmanu
