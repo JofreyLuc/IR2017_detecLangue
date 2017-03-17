@@ -18,7 +18,7 @@ def cutStm(audioFileName, transFileName, cutFileName):
         currentLine = f.readline()
 
     #Si la première ligne est un silence/musique, on prend comme début le timestamp de fin; sinon le timestamp de début
-    if (currentLine.split()[2] is "inter_segment_gap") :
+    if (currentLine.split()[2] == "inter_segment_gap") :
         debut = currentLine.split()[4]
     else :
         debut = currentLine.split()[3]
@@ -26,7 +26,7 @@ def cutStm(audioFileName, transFileName, cutFileName):
     #On va jusqu'à la fin du fichier en conservant la dernière ligne "correcte"
     nextLine = f.readline()
     while (nextLine != '') :
-        if (nextLine.split()[0] is transName and not(nextLine.split()[2] is "inter_segment_gap")) :
+        if (nextLine.split()[0] == transName and nextLine.split()[2] != "inter_segment_gap") :
             currentLine = nextLine
         nextLine = f.readline()
 
