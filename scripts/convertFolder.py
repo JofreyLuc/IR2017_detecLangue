@@ -2,10 +2,10 @@
 #Script pour transformer un dossier de fichiers audio (et leur transcription) en fichiers .mfcc
 #python3 convertFolder.py audio/ transcript/ dest/ confightk
 
-from subprocess import call, check_call
-from os import listdir, path
-import sys
-from glob import glob
+from subprocess import check_call #Pour appeller le script de conversion
+from os import path               #Pour récupérer les noms de fichier/extensions
+import sys                        #Pour les arguments du programme
+from glob import glob             #Pour lister des fichiers
 
 def convertFolder(audioFolderName, transFolderName, destFolderName, configFile) :
 

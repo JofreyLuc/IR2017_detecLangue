@@ -12,7 +12,10 @@ def cutStm(audioFileName, transFileName, cutFileName):
     transName = path.splitext(path.basename(transFileName))[0] #Nom du stm sans extension
 
     #On ouvre le fichier, tant qu'on a pas une ligne de transcription (commencant par le nom de fichier) on lit en avancant
-    f = open(transFileName, 'r')
+    if (path.isfile(path.splitext(audioFileName)[0] + ".encoding")) :
+        #Lire le fichier avec le bon encodage
+    else :
+        f = open(transFileName, 'r')
     currentLine = f.readline()
     while (currentLine.split()[0] != transName) :
         currentLine = f.readline()
