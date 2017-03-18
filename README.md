@@ -1,6 +1,6 @@
 Nécessite python3.
 
-#Conversion
+# Conversion
 
 `python3 convertAll.py`
 
