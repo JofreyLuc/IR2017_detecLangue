@@ -12,8 +12,11 @@ def cutStm(audioFileName, transFileName, cutFileName):
     transName = path.splitext(path.basename(transFileName))[0] #Nom du stm sans extension
 
     #On ouvre le fichier, tant qu'on a pas une ligne de transcription (commencant par le nom de fichier) on lit en avancant
-    if (path.isfile(path.splitext(audioFileName)[0] + ".encoding")) :
-        #Lire le fichier avec le bon encodage
+    if (path.isfile(path.dirname(audioFileName) + "/encoding.txt")) :
+        e = open(path.dirname(audioFileName) + "/encoding.txt", 'r')
+        encod = e.readline()
+        f = open(transFileName, 'r', encoding=encod)
+        e.close()
     else :
         f = open(transFileName, 'r')
     currentLine = f.readline()
@@ -38,7 +41,7 @@ def cutStm(audioFileName, transFileName, cutFileName):
     duree = float(fin) - float(debut)
     
     f.close()
-
+    
     #On coupe le fichier avec sox
     call("sox " + audioFileName + " " + cutFileName + " trim " + str(debut) + " " + str(duree), shell = True)
 
