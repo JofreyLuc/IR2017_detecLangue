@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 #Script pour transformer un fichier audio en .mfcc
-#python3 convertToMfcc.py audio.* transcript.stm confightk
+#python3 convertToMfcc.py audio.* transcript.stm resultat.mfcc confightk
 
-import cutStm               #Script de découpe des stm
-import cutMlfmanu           #Script de découpe des mlfmanu
-from os import path         #Pour couper l'extension de fichier
-from os import remove       #Pour supprimer des fichiers
-import sys                  #Pour récuperer les arguments du programme
-from subprocess import call #Pour lancer sox et htk
-from platform import system #Pour connaitre l'environnement d'execution
+from os import path                     #Pour couper l'extension de fichier
+from os import remove                   #Pour supprimer des fichiers
+import sys                              #Pour récuperer les arguments du programme
+from subprocess import call, check_call #Pour lancer sox, htk et les scripts python
+from platform import system             #Pour connaitre l'environnement d'execution
 
-
-def convertToMfcc(audioFileName, transFileName, configFile) :
+def convertToMfcc(audioFileName, transFileName, mfccFileName, configFile) :
     
     #Gestion de l'OS
     linux=False
@@ -37,19 +34,18 @@ def convertToMfcc(audioFileName, transFileName, configFile) :
     #Coupe de l'audio
     cutFileName = path.splitext(audioName)[0] + "_trimmed.wav"
     if (path.splitext(transFileName)[1] == ".stm") :
-        cutStm.cutStm(audioFileName, transFileName, cutFileName)
+        check_call([sys.executable, "cutStm.py", audioFileName, transFileName, cutFileName], shell=False)
     elif (path.splitext(transFileName)[1] == ".mlfmanu") :
-        cutMlfmanu.cutMlfmanu(audioFileName, transFileName, cutFileName)
+        check_call([sys.executable, "cutMlfmanu.py", audioFileName, transFileName, cutFileName], shell=False)
     else :
         sys.exit("Format de transcript inconnu")
 
     #Génération des mfcc
-    mfcFileName = path.splitext(audioName)[0] + ".mfcc"
     if (linux) :
 	    hCopyCall = "./HCopy"
     elif (windows) :
 	    hCopyCall = "HCopy"
-    call(hCopyCall + " -C " + configFile + " " + cutFileName + " " + mfcFileName, shell = True) 
+    call(hCopyCall + " -C " + configFile + " " + cutFileName + " " + mfccFileName, shell = True) 
 
     #Suppression des fichiers de transition
     if (hasBeenConverted) :
@@ -58,5 +54,5 @@ def convertToMfcc(audioFileName, transFileName, configFile) :
 
 
 if __name__ == '__main__':
-    convertToMfcc(sys.argv[1], sys.argv[2], sys.argv[3])
+    convertToMfcc(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
 
