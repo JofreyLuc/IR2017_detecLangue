@@ -24,13 +24,12 @@ call(hListCall + " " + mfccFileName + " >> test.txt", shell = True)
 
 ifile = open("test.txt", 'r') 
 ofile = open("sortie.txt", 'a', newline="")
-wr = csv.writer(ofile, quoting=csv.QUOTE_ALL)
+wr = csv.writer(ofile)
 currentLine = ifile.readline()
 while (currentLine != '') :
     if (not currentLine.startswith('-')) :
         currentLine += ifile.readline()
         mfcc = currentLine.split()[1:]
-        mfcc = [float(x) for x in mfcc]
         wr.writerow(mfcc)
         
     currentLine = ifile.readline()
