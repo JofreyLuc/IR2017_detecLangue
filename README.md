@@ -1,5 +1,7 @@
 Nécessite python3.
 
+Se placer dans le dossier `scripts/` pour exécuter les scripts. 
+
 # Conversion
 
 `python3 convertAll.py`
