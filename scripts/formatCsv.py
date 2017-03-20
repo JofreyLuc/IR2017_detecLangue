@@ -7,10 +7,6 @@ from glob import glob
 def formatCsv(mfccFolderName, csvFileName) :
 
     AFFICHAGE = False
-<<<<<<< HEAD
-=======
-
->>>>>>> 4b78b8d0a7896dd88107305751a7dae1193f46d6
     for arabicFile in glob(mfccFolderName + "arabic/*.mfcc") :
         check_call([sys.executable, "convertMfccToCSV.py", arabicFile, str(0), csvFileName], shell=False)
         if AFFICHAGE : print("Traité : " + arabicFile)
