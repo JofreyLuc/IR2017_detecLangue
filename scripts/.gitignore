@@ -3,4 +3,6 @@
 *.stm
 *.mfcc
 *.mlfmanu
+*.csv
 __pycache__
+testFiles/

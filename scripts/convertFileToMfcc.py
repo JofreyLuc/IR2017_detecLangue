@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 #Script pour transformer un fichier audio en .mfcc
-#python3 convertToMfcc.py audio.* transcript.stm resultat.mfcc confightk
+#python3 convertFileToMfcc.py audio.* transcript.stm resultat.mfcc confightk
 
 from os import path                     #Pour couper l'extension de fichier
 from os import remove                   #Pour supprimer des fichiers
 import sys                              #Pour récuperer les arguments du programme
 from subprocess import call, check_call #Pour lancer sox, htk et les scripts python
-from platform import system             #Pour connaitre l'environnement d'execution
+from platform import system             #Pour connaitre l'environnement d'exécution
 
-def convertToMfcc(audioFileName, transFileName, mfccFileName, configFile) :
+def convertFileToMfcc(audioFileName, transFileName, mfccFileName, configFile) :
     
     #Gestion de l'OS
     linux=False
@@ -54,5 +54,5 @@ def convertToMfcc(audioFileName, transFileName, mfccFileName, configFile) :
 
 
 if __name__ == '__main__':
-    convertToMfcc(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
+    convertFileToMfcc(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
 

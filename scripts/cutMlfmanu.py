@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #Script pour couper le début et la fin de non-parole des fichiers mlfmanu
-#python3 cutMlfmanu.py audio.wav transcript.stm audio_trimmed.wav
+#python3 cutMlfmanu.py audio.wav transcript.mlfmanu audio_trimmed.wav
 
 from os import path         #Pour couper l'extension de fichier
 import sys                  #Pour récuperer les arguments du programme

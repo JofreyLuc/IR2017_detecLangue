@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 #Script pour couper le début et la fin de non-parole des fichiers stm
-#python3 cutStm.py audio.wav transcript.stm audio_trimmed.wav
+#python3 cutStm.py audio.wav transcript.stm audio_trimmed.wav <temps_de_debut_de_la_coupe>
 
 from os import path         #Pour couper l'extension de fichier
 import sys                  #Pour récuperer les arguments du programme
 from subprocess import call #Pour lancer sox
-import argparse				#Pour parser les arguments
+import argparse		    #Pour parser les arguments
 
 # Vérifie si la chaîne de caractères passées en paramètres correspond bien à un fichier existant 
 def is_valid_file(filename):
@@ -27,14 +27,16 @@ def cutStm(audioFileName, transFileName, cutFileName, beginningTime):
 
     transName = path.splitext(path.basename(transFileName))[0] #Nom du stm sans extension
 
-    #On ouvre le fichier, tant qu'on a pas une ligne de transcription (commencant par le nom de fichier) on lit en avancant
-    if (path.isfile(path.dirname(audioFileName) + "/encoding.txt")) :
-        e = open(path.dirname(audioFileName) + "/encoding.txt", 'r')
+    #On ouvre le fichier avec le bon encodage si celui-ci est précisé
+    if (path.isfile(path.dirname(transFileName) + "/encoding.txt")) :
+        e = open(path.dirname(transFileName) + "/encoding.txt", 'r')
         encod = e.readline()
         f = open(transFileName, 'r', encoding=encod)
         e.close()
     else :
         f = open(transFileName, 'r')
+
+    #Tant qu'on a pas une ligne de transcription (commencant par le nom de fichier) on lit en avancant
     currentLine = f.readline()
     while (currentLine.split()[0] != transName) :
         currentLine = f.readline()
@@ -66,7 +68,7 @@ def cutStm(audioFileName, transFileName, cutFileName, beginningTime):
     call("sox " + audioFileName + " " + cutFileName + " trim " + str(debut) + " " + str(duree), shell = True)
 
 if __name__ == '__main__':
-# On parse les arguments
+    #On parse les arguments
     parser = argparse.ArgumentParser(description="Programme python permettant de couper un fichier audio a partir de son fichier de transcription.")
     parser.add_argument("audioFileName", metavar="audioFile",
                         help="fichier audio.",
