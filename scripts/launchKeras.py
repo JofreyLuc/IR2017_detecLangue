@@ -19,7 +19,7 @@ Y = to_categorical(Y)
 
 #On crée le modèle séquentiel, avec 4 couches
 model = Sequential()
-model.add(Dropout(0.2, input_shape=(13,)))
+#model.add(Dropout(0.2, input_shape=(13,)))
 model.add(Dense(390, input_dim=13, kernel_initializer='normal', activation='relu'))
 model.add(Dense(256, kernel_initializer='normal', activation='relu'))
 model.add(Dense(256, kernel_initializer='normal', activation='relu'))
@@ -29,7 +29,7 @@ model.add(Dense(4, kernel_initializer='normal', activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='RMSprop', metrics=['accuracy'])
 
 #On entraîne le modèle
-model.fit(X, Y, epochs=150, validation_split=0.1, batch_size=128)
+model.fit(X, Y, epochs=500, validation_split=0.1, batch_size=128)
 
 #On évalue le modèle
 #score = model.evaluate(X, Y)[1]
