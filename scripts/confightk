@@ -3,8 +3,8 @@ SOURCEKIND=WAVEFORM
 SOURCEFORMAT=WAV
 
 # Eventuellement nécessaire pour des procos différents (big/little endian)
-# NATURALREADORDER=T
-# NATURALWRITEORDER=T
+NATURALREADORDER=T
+NATURALWRITEORDER=T
 
 # Format du fichier de sortie
 TARGETFORMAT=HTK

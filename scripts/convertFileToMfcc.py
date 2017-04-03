@@ -5,7 +5,7 @@
 from os import path                     #Pour couper l'extension de fichier
 from os import remove                   #Pour supprimer des fichiers
 import sys                              #Pour récuperer les arguments du programme
-from subprocess import call, check_call #Pour lancer sox, htk et les scripts python
+from subprocess import check_output, CalledProcessError, STDOUT, call     #Pour lancer sox, htk et les scripts python
 from platform import system             #Pour connaitre l'environnement d'exécution
 
 def convertFileToMfcc(audioFileName, transFileName, mfccFileName, configFile) :
@@ -27,25 +27,32 @@ def convertFileToMfcc(audioFileName, transFileName, mfccFileName, configFile) :
     #Conversion en wav si besoin
     if (path.splitext(audioFileName)[1] != ".wav") :
         wavFileName = audioName + ".wav"
-        call("sox " + audioFileName + " " + wavFileName, shell = True)
+        try :
+            check_output("sox " + audioFileName + " " + wavFileName, shell = True, stderr=STDOUT)
+        except CalledProcessError as exc :                                                                                          
+            print("Erreur lors de l'appel à SOX (returncode : ", exc.returncode, ") :\n", exc.output.decode(sys.stdout.encoding))
+            sys.exit(1)
         audioName = wavFileName
         hasBeenConverted = True
 
     #Coupe de l'audio
     cutFileName = path.splitext(audioName)[0] + "_trimmed.wav"
-    if (path.splitext(transFileName)[1] == ".stm") :
-        check_call([sys.executable, "cutStm.py", audioFileName, transFileName, cutFileName], shell=False)
-    elif (path.splitext(transFileName)[1] == ".mlfmanu") :
-        check_call([sys.executable, "cutMlfmanu.py", audioFileName, transFileName, cutFileName], shell=False)
-    else :
-        sys.exit("Format de transcript inconnu")
+    try :
+        check_output([sys.executable, "cutAudioFile.py", audioFileName, transFileName, cutFileName], shell=False, stderr=STDOUT)
+    except CalledProcessError as exc :                                                                                          
+        print("Erreur lors de l'appel du script cutAudioFile.py (returncode : ", exc.returncode, ") :\n", exc.output.decode(sys.stdout.encoding))
+        sys.exit(1)
 
-    #Génération des mfcc
+        #Génération des mfcc
     if (linux) :
 	    hCopyCall = "./HCopy"
     elif (windows) :
 	    hCopyCall = "HCopy"
-    call(hCopyCall + " -C " + configFile + " " + cutFileName + " " + mfccFileName, shell = True) 
+    try :
+        check_output(hCopyCall + " -C " + configFile + " " + cutFileName + " " + mfccFileName, shell = True, stderr=STDOUT)
+    except CalledProcessError as exc :                                                                                          
+        print("Erreur lors de l'appel à HCopy (HTK) (returncode : ", exc.returncode, ") :\n", exc.output.decode(sys.stdout.encoding))
+        sys.exit(1)
 
     #Suppression des fichiers de transition
     if (hasBeenConverted) :
@@ -55,4 +62,3 @@ def convertFileToMfcc(audioFileName, transFileName, mfccFileName, configFile) :
 
 if __name__ == '__main__':
     convertFileToMfcc(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
-
