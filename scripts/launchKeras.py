@@ -13,19 +13,19 @@ hdf5In = h5py.File(dataFile, "r")
 
 #Pour chaque dataset du fichier hdf5
 for dataset in hdf5In.values():
-    language = dataset[:,13][0]
     interval = 31
     shift = 10
     count =0
     datasetValues = []
     for index in range(0, len(dataset) - interval, shift):
         values = dataset[index:index+interval]
-        language = values[0][13]
-        for i in range(len(values)):
-            for j in range(len(values[0])):
-                datasetValues.append(dataset[i][j])
-    print(datasetValues)
-exit()
+        language = values[0][13] #13 en dur
+        for i in values :
+            datasetValues = np.concatenate((datasetValues, i[0:13]), axis=0)
+            
+        print(datasetValues)
+        exit()
+
 #On divise les données en séparant leur étiquette
 X = dataset[:,0:13]
 Y = dataset[:,13]
