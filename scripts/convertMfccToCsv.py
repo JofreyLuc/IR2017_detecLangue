@@ -7,6 +7,9 @@ from subprocess import call
 from platform import system             #Pour connaitre l'environnement d'execution
 import csv
 from os import remove                   #Pour supprimer des fichiers
+from os import path                                             # Pour couper l'extension de fichier
+import numpy as np
+import h5py
 
 def convertMfccToCsv(mfccFileName, language, outputFile) :
     
@@ -31,25 +34,31 @@ def convertMfccToCsv(mfccFileName, language, outputFile) :
     call(hListCall + " " + mfccFileName + " >> " + tmpFile, shell = True)        
 
     ifile = open(tmpFile, 'r') #Fichier d'entrée
-    ofile = open(outputFile, 'a', newline="") #Fichier de sortie (crée si non existant)
-    wr = csv.writer(ofile) #Formatteur csv
     currentLine = ifile.readline()
-
+    
+    mfcc = []
     #Pour tout le fichier
     while (currentLine != '') :
         #Si on est sur une ligne de données
         if (not currentLine.startswith('-')) :
             #On lit la ligne suivante, on ajoute la langue et on écrit dans le csv
             currentLine += ifile.readline()
-            mfcc = currentLine.split()[1:]
-            mfcc.append(language)
-            wr.writerow(mfcc)
+            mfccRow = currentLine.split()[1:]
+            mfccRow.append(language)
+            mfcc.append(mfccRow)
    
         currentLine = ifile.readline()
-
+    
     ifile.close()
-    ofile.close()  
     remove(tmpFile)
-
+    
+    npMfcc = np.asarray(mfcc)
+    #création du conteneur HDF5
+    hdf5Out = h5py.File("train.hdf5", "w") 
+    #on crée 1 dataset hdf5 pour ce fichier mfcc 
+    fileName = path.splitext(path.basename(mfccFileName))[0] #Nom du fichier sans extension
+    hdf5Out.create_dataset(fileName, data=npMfcc)
+    hdf5Out.close()
+    
 if __name__ == '__main__':
     convertMfccToCsv(sys.argv[1], sys.argv[2], sys.argv[3])
