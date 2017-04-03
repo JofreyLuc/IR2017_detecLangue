@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-#Script pour convertir un fichier mfcc dans un fichier csv en l'étiquettant
+#Script pour convertir un fichier mfcc dans un fichier hdf5 en l'étiquettant
 #python3 convertMfccToCsv.py fichier.mfcc codeLangue out.csv
 
 import sys,os
@@ -11,7 +11,7 @@ from os import path                                             # Pour couper l'
 import numpy as np
 import h5py
 
-def convertMfccToCsv(mfccFileName, language, outputFile) :
+def convertMfccToHdf5(mfccFileName, language, outputFile) :
     
     #Gestion de l'OS
     linux=False
@@ -45,6 +45,7 @@ def convertMfccToCsv(mfccFileName, language, outputFile) :
             currentLine += ifile.readline()
             mfccRow = currentLine.split()[1:]
             mfccRow.append(language)
+            mfccRow = [float(i) for i in mfccRow]
             mfcc.append(mfccRow)
    
         currentLine = ifile.readline()
@@ -54,11 +55,11 @@ def convertMfccToCsv(mfccFileName, language, outputFile) :
     
     npMfcc = np.asarray(mfcc)
     #création du conteneur HDF5
-    hdf5Out = h5py.File("train.hdf5", "w") 
+    hdf5Out = h5py.File(outputFile, "a")
     #on crée 1 dataset hdf5 pour ce fichier mfcc 
     fileName = path.splitext(path.basename(mfccFileName))[0] #Nom du fichier sans extension
     hdf5Out.create_dataset(fileName, data=npMfcc)
     hdf5Out.close()
     
 if __name__ == '__main__':
-    convertMfccToCsv(sys.argv[1], sys.argv[2], sys.argv[3])
+    convertMfccToHdf5(sys.argv[1], sys.argv[2], sys.argv[3])
