@@ -16,10 +16,10 @@ def convertAllToMfcc() :
     if not path.exists("../mfcc/german") : makedirs("../mfcc/german")
 
     #On appelle le script de conversion sur les fichiers du corpus
-    check_call([sys.executable, "convertFolderToMfcc.py", "../corpus/arabic/", "../transcripts/arabic/", "../mfcc/arabic/", "confightk"], shell=False)
-    check_call([sys.executable, "convertFolderToMfcc.py", "../corpus/english/", "../transcripts/english/", "../mfcc/english/", "confightk"], shell=False)
-    check_call([sys.executable, "convertFolderToMfcc.py", "../corpus/french/", "../transcripts/french/", "../mfcc/french/", "confightk"], shell=False)
-    check_call([sys.executable, "convertFolderToMfcc.py", "../corpus/german/", "../transcripts/german/", "../mfcc/german/", "confightk"], shell=False)
+    check_call([sys.executable, "convertFolderToMfcc.py", "../train/corpus/arabic/", "../train/transcripts/arabic/", "../mfcc/arabic/", "confightk"], shell=False)
+    check_call([sys.executable, "convertFolderToMfcc.py", "../train/corpus/english/", "../train/transcripts/english/", "../mfcc/english/", "confightk"], shell=False)
+    check_call([sys.executable, "convertFolderToMfcc.py", "../train/corpus/french/", "../train/transcripts/french/", "../mfcc/french/", "confightk"], shell=False)
+    check_call([sys.executable, "convertFolderToMfcc.py", "../train/corpus/german/", "../train/transcripts/german/", "../mfcc/german/", "confightk"], shell=False)
 
 if __name__ == '__main__':
     convertAllToMfcc()

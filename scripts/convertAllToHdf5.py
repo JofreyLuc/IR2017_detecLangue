@@ -14,19 +14,19 @@ def convertAllToHdf5(mfccFolderName, hdf5FileName) :
     if path.isfile(hdf5FileName) : remove(hdf5FileName)
     
     for arabicFile in glob(mfccFolderName + "arabic/*.mfcc") :
-        check_call([sys.executable, "convertMfccToCsv.py", arabicFile, str(0), hdf5FileName], shell=False)
+        check_call([sys.executable, "convertMfccToHdf5.py", arabicFile, str(0), hdf5FileName], shell=False)
         if AFFICHAGE : print("Traité : " + arabicFile)
 
     for englishFile in glob(mfccFolderName + "english/*.mfcc") :
-        check_call([sys.executable, "convertMfccToCsv.py", englishFile, str(1), hdf5FileName], shell=False)
+        check_call([sys.executable, "convertMfccToHdf5.py", englishFile, str(1), hdf5FileName], shell=False)
         if AFFICHAGE : print("Traité : " + englishFile)
 
     for frenchFile in glob(mfccFolderName + "french/*.mfcc") :
-        check_call([sys.executable, "convertMfccToCsv.py", frenchFile, str(2), hdf5FileName], shell=False)
+        check_call([sys.executable, "convertMfccToHdf5.py", frenchFile, str(2), hdf5FileName], shell=False)
         if AFFICHAGE : print("Traité : " + frenchFile)
 
     for germanFile in glob(mfccFolderName + "german/*.mfcc") :
-        check_call([sys.executable, "convertMfccToCsv.py", germanFile, str(3), hdf5FileName], shell=False)
+        check_call([sys.executable, "convertMfccToHdf5.py", germanFile, str(3), hdf5FileName], shell=False)
         if AFFICHAGE : print("Traité : " + germanFile)
     
 if __name__ == '__main__':

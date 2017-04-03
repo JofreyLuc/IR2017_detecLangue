@@ -35,22 +35,16 @@ for dataset in hdf5In.values():
             examplesArray = np.append(examplesArray, [datasetValues], axis=0)
             languagesArray = np.append(languagesArray, [language], axis=0)
             
-        lala+=1
-        if lala == 4 :
-            print(examplesArray)
-            print(languagesArray)
-            exit()
-
 #On divise les données en séparant leur étiquette
-X = dataset[:,0:13]
-Y = dataset[:,13]
+#X = dataset[:,0:13]
+#Y = dataset[:,13]
 
-Y = to_categorical(Y)
+languagesArray = to_categorical(languagesArray)
 
 #On crée le modèle séquentiel, avec 4 couches
 model = Sequential()
 #model.add(Dropout(0.2, input_shape=(13,)))
-model.add(Dense(13, input_shape=(13,), kernel_initializer='normal', activation='relu'))
+model.add(Dense(403, input_shape=(403,), kernel_initializer='normal', activation='relu'))
 model.add(Dense(256, kernel_initializer='normal', activation='relu'))
 model.add(Dense(256, kernel_initializer='normal', activation='relu'))
 model.add(Dense(2, kernel_initializer='normal', activation='softmax'))
@@ -59,7 +53,7 @@ model.add(Dense(2, kernel_initializer='normal', activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='RMSprop', metrics=['accuracy'])
 
 #On entraîne le modèle
-model.fit(X, Y, epochs=500, validation_split=0.1, batch_size=128)
+model.fit(examplesArray, languagesArray, epochs=500, validation_split=0.1, batch_size=128)
 
 #On évalue le modèle
 #score = model.evaluate(X, Y)[1]
