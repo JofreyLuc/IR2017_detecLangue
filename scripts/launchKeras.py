@@ -11,20 +11,33 @@ import sys
 dataFile = sys.argv[1]
 hdf5In = h5py.File(dataFile, "r")
 
+examplesArray = np.array([[]])
+languagesArray = []
+debut = True
+
+lala = 0
+
 #Pour chaque dataset du fichier hdf5
 for dataset in hdf5In.values():
     interval = 31
     shift = 10
-    count =0
-    datasetValues = []
+    count = 0
     for index in range(0, len(dataset) - interval, shift):
         values = dataset[index:index+interval]
         language = values[0][13] #13 en dur
+        datasetValues = []
         for i in values :
             datasetValues = np.concatenate((datasetValues, i[0:13]), axis=0)
-            
-        print(datasetValues)
-        exit()
+
+        if debut :
+            examplesArray = np.array([datasetValues])
+            debut = False
+        else :
+            examplesArray = np.append(examplesArray, [datasetValues], axis=0)
+        print(examplesArray)
+
+        lala+=1
+        if lala == 2 : exit()
 
 #On divise les données en séparant leur étiquette
 X = dataset[:,0:13]
