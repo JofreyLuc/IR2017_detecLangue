@@ -11,33 +11,42 @@ import sys
 dataFile = sys.argv[1]
 hdf5In = h5py.File(dataFile, "r")
 
-debut = True
 
-lala = 0
+#Nombre d'exemples
+totalFrames = 0
+for dataset in hdf5In.values():
+    frames = int(dataset.shape[0]/31)
+    totalFrames+=frames
+
+debut = True
+examplesArray = np.empty([totalFrames, 13*31])
+languagesArray = np.empty([totalFrames])
+interval = 31
+shift = 10
+count = 0
 
 #Pour chaque dataset du fichier hdf5
 for dataset in hdf5In.values():
-    interval = 31
-    shift = 10
-    count = 0
+    print(dataset)
+
     for index in range(0, len(dataset) - interval, shift):
+        #if index%1000 == 0 : print(index)
         values = dataset[index:index+interval]
         language = values[0][13] #13 en dur
         datasetValues = []
         for i in values :
             datasetValues = np.concatenate((datasetValues, i[0:13]), axis=0)
 
-        if debut :
+        '''if debut :
             examplesArray = np.array([datasetValues])
             languagesArray = np.array([language])
             debut = False
         else :
             examplesArray = np.append(examplesArray, [datasetValues], axis=0)
             languagesArray = np.append(languagesArray, [language], axis=0)
-            
-#On divise les données en séparant leur étiquette
-#X = dataset[:,0:13]
-#Y = dataset[:,13]
+           '''
+        examplesArray[count] = datasetValues
+        languagesArray[count] = language
 
 languagesArray = to_categorical(languagesArray)
 
@@ -53,7 +62,7 @@ model.add(Dense(2, kernel_initializer='normal', activation='softmax'))
 model.compile(loss='categorical_crossentropy', optimizer='RMSprop', metrics=['accuracy'])
 
 #On entraîne le modèle
-model.fit(examplesArray, languagesArray, epochs=500, validation_split=0.1, batch_size=128)
+model.fit(examplesArray, languagesArray, epochs=10, batch_size=128)
 
 #On évalue le modèle
 #score = model.evaluate(X, Y)[1]
