@@ -15,7 +15,7 @@ hdf5In = h5py.File(dataFile, "r")
 #Nombre d'exemples
 totalFrames = 0
 for dataset in hdf5In.values():
-    frames = int(dataset.shape[0]/31)
+    frames = int((dataset.shape[0]-31)/10)+1
     totalFrames+=frames
 
 debut = True
