@@ -47,6 +47,7 @@ for dataset in hdf5In.values():
            '''
         examplesArray[count] = datasetValues
         languagesArray[count] = language
+        count+=1
 
 languagesArray = to_categorical(languagesArray)
 
@@ -56,7 +57,7 @@ model = Sequential()
 model.add(Dense(403, input_shape=(403,), kernel_initializer='normal', activation='relu'))
 model.add(Dense(256, kernel_initializer='normal', activation='relu'))
 model.add(Dense(256, kernel_initializer='normal', activation='relu'))
-model.add(Dense(2, kernel_initializer='normal', activation='softmax'))
+model.add(Dense(4, kernel_initializer='normal', activation='softmax'))
 
 #On compile le modèle
 model.compile(loss='categorical_crossentropy', optimizer='RMSprop', metrics=['accuracy'])
