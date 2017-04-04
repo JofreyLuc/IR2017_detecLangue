@@ -20,11 +20,17 @@ for dataset in hdf5In.values():
     frames = int((dataset.shape[0]-31)/10)+1
     totalFrames+=frames
 
-totalFrames *= 100
+
+
+
+totalFrames *= 20
 print(totalFrames)
+
+
 
 hdf5Out.create_dataset("examples", (totalFrames, 13*31))
 hdf5Out.create_dataset("languages", (totalFrames,))
+
 examplesArray = hdf5Out.get("examples")
 languagesArray = hdf5Out.get("languages")
 
@@ -36,12 +42,13 @@ shift = 10
 count = 0
 
 #Pour chaque dataset du fichier hdf5
-for i in range(100):
+for j in range(20):
+    print(j)
     for dataset in hdf5In.values():
-        print(dataset)
+        #print(dataset)
+
 
         for index in range(0, len(dataset) - interval, shift):
-            #if index%1000 == 0 : print(index)
             values = dataset[index:index+interval]
             language = values[0][13] #13 en dur
             datasetValues = np.empty([13*31])
@@ -51,14 +58,6 @@ for i in range(100):
                 datasetValues[count0:count0+13] = i[0:13]
                 count0 += 13
 
-            '''if debut :
-                examplesArray = np.array([datasetValues])
-                languagesArray = np.array([language])
-                debut = False
-            else :
-                examplesArray = np.append(examplesArray, [datasetValues], axis=0)
-                languagesArray = np.append(languagesArray, [language], axis=0)
-               '''
             examplesArray[count] = datasetValues
             languagesArray[count] = language
             count+=1

@@ -4,5 +4,6 @@
 *.mfcc
 *.mlfmanu
 *.csv
+*.hdf5
 __pycache__
 testFiles/
