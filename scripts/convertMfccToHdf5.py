@@ -26,7 +26,6 @@ def convertMfccToHdf5(mfccFileName, language, outputFile) :
         
     tmpFile = "HListTmp" #Fichier texte temporaire généré par HList
         
-    #Génération des mfcc
     if (linux) :
         hListCall = "./HList"
     elif (windows) :

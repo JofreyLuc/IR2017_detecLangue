@@ -9,7 +9,7 @@ from os import path, remove       #Pour supprimer le fichier si il existe déjà
 
 def convertAllToHdf5(mfccFolderName, hdf5FileName) :
 
-    AFFICHAGE = False #Activer l'affichage pendant la conversion
+    AFFICHAGE = True #Activer l'affichage pendant la conversion
 
     if path.isfile(hdf5FileName) : remove(hdf5FileName)
     
