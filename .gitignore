@@ -2,3 +2,5 @@ mfcc/
 dev/
 test/
 train/
+mfccdev/
+mfcctest/

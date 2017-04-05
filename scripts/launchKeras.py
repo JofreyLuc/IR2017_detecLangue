@@ -9,7 +9,7 @@ import sys
 from os import remove
 
 def formatDataForKeras(dataFileName, hdf5Tmp, nbVal, nbCoef, shift, withoutLabel=False):
-    """
+    '''
         Formatte les données d'un fichier hdf5 qui est organisé en plusieurs datasets
         qui contiennent chacun des fenêtres de parole en deux tableaux numpy (données et étiquettes)
         lisibles par Keras.
@@ -19,7 +19,7 @@ def formatDataForKeras(dataFileName, hdf5Tmp, nbVal, nbCoef, shift, withoutLabel
         :type arg1: type description
         :return: return description
         :rtype: the return type description
-    """
+    '''
     hdf5In = h5py.File(dataFileName, "r")
     
     # Calcul du nombre total de fenêtres de parole de la base d'apprentissage
@@ -89,11 +89,16 @@ if __name__ == '__main__':
 
     # On récupère les données
     dataFileName = sys.argv[1]
+    devFileName = sys.argv[2]
+    testFileName = sys.argv[3]
     # On crée le fichier temporaire hdf5
     tmpFile = "tmp.hdf5"
     hdf5Tmp = h5py.File(tmpFile, "w")
+
     # On formatte les données
     (X, Y) = formatDataForKeras(dataFileName, hdf5Tmp, nbVal, nbCoef, shift)
+    (Xdev, Ydev) = formatDataForKeras(devFileName, hdf5Tmp, nbVal, nbCoef, shift)
+    (Xtest, Ytest) = formatDataForKeras(testFileName, hdf5Tmp, nbVal, nbCoef, shift)
 
     # On crée le modèle séquentiel, avec 4 couches
     inputShape = nbVal * nbCoef
@@ -108,11 +113,11 @@ if __name__ == '__main__':
     model.compile(loss='categorical_crossentropy', optimizer='RMSprop', metrics=['accuracy'])
 
     # On entraîne le modèle
-    model.fit(X, Y, epochs=10, batch_size=128, shuffle='batch')
+    model.fit(X, Y, epochs=10, batch_size=128, validation_data=(Xdev, Ydev), shuffle='batch')
 
     hdf5Tmp.close() # On peut fermer le fichier temporaire
     remove(tmpFile) # et le supprimer
 
     # On évalue le modèle
-    #score = model.evaluate(X, Y)[1]
+    #score = model.evaluate(Xtest, Ytest)[1]
     #print("Accuracy : " + score)
