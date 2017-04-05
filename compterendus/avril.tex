@@ -1,0 +1,81 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\author{J.Luc \& A. Lanoix}
+\title{Init recherche 06/04}
+\date{05/04/2017}
+
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+
+% Default fixed font does not support bold face
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{12} % for bold
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{12}  % for normal
+
+\newcommand\pythonstyle{\lstset{
+  language=Python,
+  backgroundcolor=\color{white}, 
+  basicstyle=\ttm,
+  otherkeywords={self},            
+  keywordstyle=\ttb\color{deepblue},
+  emph={MyClass,__init__},          
+  emphstyle=\ttb\color{deepred},    
+  stringstyle=\color{deepgreen},
+  commentstyle=\color{red}, 
+  frame=tb,                         
+  showstringspaces=false,
+  inputencoding=utf8,
+  extendedchars=true,
+  literate={é}{{\'e}}1 {î}{{\^i}}1 {ê}{{\^e}}1 {è}{{\`e}}1 {à}{{\`a}}1
+}}
+
+\begin{document}
+
+\subsection*{Réunion 06/04}
+
+Nous avons converti les mfcc en un fichier hdf5 (environ 330Mo) qui contient tous les vecteurs acoustiques (avec la langue en 14è valeur) de tous les fichiers, séparés en datasets (un dataset par fichier).\\
+
+\noindent Du coup nous traitons les données en en faisant un autre fichier hdf5, avec un dataset de taille \verb|nombre_d'exemples| * \verb|403| pour les valeurs audio et un autre de taille \verb|nombre_d'exemples| pour les étiquettes.\\
+
+Code du fichier lançant Keras :\\
+
+\newcommand\pythonexternal[2][]{{
+\pythonstyle
+\lstinputlisting[#1]{#2}}}
+
+\pythonexternal[showstringspaces=false, breaklines=true,breakatwhitespace=true]{launchKeras.py}
+
+\newpage
+
+\noindent Résultat de l'exécution (10 epochs) :\\
+
+\begin{lstlisting}[breaklines=true,breakatwhitespace=true]
+Epoch 1/10
+116960/116960 [==============================] - 15s - loss: 1.1964 - acc: 0.4636 - val_loss: 1.1250 - val_acc: 0.5120
+Epoch 2/10
+116960/116960 [==============================] - 15s - loss: 0.9184 - acc: 0.6120 - val_loss: 1.1396 - val_acc: 0.5623
+Epoch 3/10
+116960/116960 [==============================] - 15s - loss: 0.7703 - acc: 0.6934 - val_loss: 1.3399 - val_acc: 0.5009
+Epoch 4/10
+116960/116960 [==============================] - 15s - loss: 0.6882 - acc: 0.7322 - val_loss: 1.3696 - val_acc: 0.5423
+Epoch 5/10
+116960/116960 [==============================] - 15s - loss: 0.6344 - acc: 0.7574 - val_loss: 1.1985 - val_acc: 0.5890
+Epoch 6/10
+116960/116960 [==============================] - 15s - loss: 0.5759 - acc: 0.7830 - val_loss: 1.5915 - val_acc: 0.5550
+Epoch 7/10
+116960/116960 [==============================] - 15s - loss: 0.5509 - acc: 0.7937 - val_loss: 2.4062 - val_acc: 0.5499
+Epoch 8/10
+116960/116960 [==============================] - 15s - loss: 0.5321 - acc: 0.8023 - val_loss: 2.1470 - val_acc: 0.5685
+Epoch 9/10
+116960/116960 [==============================] - 15s - loss: 0.5104 - acc: 0.8105 - val_loss: 2.2892 - val_acc: 0.5828
+Epoch 10/10
+116960/116960 [==============================] - 15s - loss: 0.4899 - acc: 0.8208 - val_loss: 3.1017 - val_acc: 0.4728
+\end{lstlisting}
+
+
+\end{document}
