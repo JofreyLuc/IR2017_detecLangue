@@ -6,7 +6,7 @@ from keras.utils.np_utils import to_categorical
 import numpy as np
 import h5py
 import sys
-from os import remove                   #Pour supprimer des fichiers
+from os import remove
 
 # Paramètres
 # Nombre de coefficients cepstraux
