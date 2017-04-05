@@ -38,6 +38,9 @@ hdf5Tmp.create_dataset("languages", (totalFrames,))               # dataset éti
 X = hdf5Tmp.get("examples")
 Y = hdf5Tmp.get("languages")
 
+# On va stocker les valeurs de la fenêtre de parole dans un tableau numpy temporaire
+# cela permet d'accélerer le remplissage des datasets temporaires
+frameValues = np.empty([nbVal * nbCoef])
 frameIndex = 0
 # Parcours des datasets du fichier d'entrée afin de remplir les datasets temporaires
 for dataset in hdf5In.values():
@@ -49,9 +52,6 @@ for dataset in hdf5In.values():
         # On prend le langage sur le premier vecteur de la fenêtre (dernière valeur du vecteur)
         language = frameVectors[0][len(frameVectors[0])-1]
         vectorIndex = 0
-        # On va stocker les valeurs de la fenêtre de parole dans un tableau numpy temporaire
-        # cela permet d'accélerer le remplissage des datasets temporaires
-        frameValues = np.empty([nbVal * nbCoef])
         # Pour chaque vecteur (contenant nbCoef valeurs) de la fenêtre courante
         for vector in frameVectors :
             # On remplit le tableau de la fenêtre de parole avec les coefficients du vecteur
