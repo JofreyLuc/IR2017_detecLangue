@@ -62,7 +62,7 @@ def formatDataForKeras(dataFileName, hdf5Tmp, nbVal, nbCoef, shift, withoutLabel
             for vector in frameVectors :
                 # On remplit le tableau de la fenêtre de parole avec les coefficients du vecteur
                 frameValues[vectorIndex : vectorIndex + nbCoef] = vector[0 : nbCoef]
-                vectorIndex += 13  # au fur et à mesure
+                vectorIndex += nbCoef  # au fur et à mesure
 
             # On remplit le dataset data avec les coefficients du vecteur
             X[frameIndex] = frameValues
@@ -83,7 +83,7 @@ if __name__ == '__main__':
     # Nombre de coefficients cepstraux
     nbCoef = 13
     # Nombre de valeurs à prélever pour obtenir une "fenêtre de parole"
-    nbVal = 31
+    nbVal = 101
     # Décalage entre chaque prélevement de fenêtre de parole
     shift = 10
 
@@ -103,17 +103,18 @@ if __name__ == '__main__':
     # On crée le modèle séquentiel, avec 4 couches
     inputShape = nbVal * nbCoef
     model = Sequential()
+    model.add(Dense(inputShape, input_shape=(inputShape,), kernel_initializer='glorot_normal', activation='relu'))
     model.add(Dropout(0.2, input_shape=(inputShape,)))
-    model.add(Dense(inputShape, kernel_initializer='normal', activation='relu'))
-    model.add(Dense(256, kernel_initializer='normal', activation='relu'))
-    model.add(Dense(256, kernel_initializer='normal', activation='relu'))
-    model.add(Dense(4, kernel_initializer='normal', activation='softmax'))
+    model.add(Dense(256, kernel_initializer='glorot_normal', activation='relu'))
+    model.add(Dropout(0.2, input_shape=(inputShape,)))
+    model.add(Dense(256, kernel_initializer='glorot_normal', activation='relu'))
+    model.add(Dense(4, kernel_initializer='glorot_normal', activation='softmax'))
 
     # On compile le modèle
     model.compile(loss='categorical_crossentropy', optimizer='RMSprop', metrics=['accuracy'])
 
     # On entraîne le modèle
-    model.fit(X, Y, epochs=10, batch_size=128, validation_data=(Xdev, Ydev), shuffle='batch')
+    model.fit(X, Y, epochs=250, batch_size=128, validation_data=(Xdev, Ydev), shuffle='batch')
 
     hdf5Tmp.close() # On peut fermer le fichier temporaire
     remove(tmpFile) # et le supprimer
