@@ -5,7 +5,8 @@ from keras.layers import Dense, Dropout
 import numpy as np
 import h5py
 import sys
-from os import remove
+from os import remove, path
+from glob import glob
 
 # Paramètres
 #Affichage du traitement des données
@@ -77,9 +78,28 @@ def formatDataMemory(dataFileName, withoutLabel=False):
     else:
         return (X, Y)
 
-
-if __name__ == '__main__':   
-
+def writeProbaToFile(outFileName, probaArray, langStrList, numberPrecision=2, numberOfMinSpaces=2):
+    np.round(probaArray, decimals=numberPrecision)
+    probaNbOfChar = 2 + numberPrecision
+    langNbOfChar = max(len(lang) for lang in langStrList)
+    nbOfCharPerColumn = max(probaNbOfChar, langNbOfChar)
+    headerStr = ''
+    for lang in langStrList:
+        offset = nbOfCharPerColumn - len(lang)
+        headerStr += str(lang) + ' ' * (offset + numberOfMinSpaces) 
+    fmtValue = '%1.' + str(numberPrecision) + 'f'
+    numberDelimiter = ' ' * (nbOfCharPerColumn - probaNbOfChar + numberOfMinSpaces)
+    np.savetxt(outFileName, probaArray, fmt=fmtValue, delimiter=numberDelimiter, newline='\n', header=headerStr, comments='')
+        
+#fonction temporaire
+def generatePredict(predictFolder, model):
+    langs = ['Arabe', 'Anglais', 'Francais', 'Allemand']
+    for i in glob(predictFolder+'/*.hdf5'):
+        Xtest = formatDataMemory(i)
+        proba = model.predict_proba(Xtest, batch_size=128, verbose=0)
+        writeProbaToFile(path.splitext(i)+'.txt', proba, langs)
+            
+if __name__ == '__main__':
     # On récupère les données
     dataFileName = sys.argv[1]
     devFileName = sys.argv[2]
@@ -104,14 +124,10 @@ if __name__ == '__main__':
     model.compile(loss='categorical_crossentropy', optimizer='RMSprop', metrics=['accuracy'])
 
     # On entraîne le modèle
-    model.fit(X, Y, epochs=100, batch_size=128, validation_data=(Xdev, Ydev), shuffle='batch')
-
-
-
-
-
-
-
+    model.fit(X, Y, epochs=1, batch_size=128, validation_data=(Xdev, Ydev))
+            
+    generatePredict(sys.argv[4], model)
+    
 #Formatte les données en le mettant dans un tableau hdf5 temporaire (utile pour les fichiers dépassant la taille de la ram)
 def formatDataHdf5(dataFileName, hdf5Tmp, withoutLabel=False):
     '''
