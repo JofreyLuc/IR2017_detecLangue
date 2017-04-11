@@ -2,7 +2,6 @@
 
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
-from keras.utils.np_utils import to_categorical
 import numpy as np
 import h5py
 import sys
