@@ -81,6 +81,8 @@ def formatDataMemory(dataFileName, withoutLabel=False):
 def writeProbaToFile(outFileName, exampleFileName, exampleFileLang, probaArray, langStrList, numberPrecision=2, numberOfMinSpaces=2):
     np.round(probaArray, decimals=numberPrecision)  # On arrondit les probas
 
+    exampleFileName = path.basename(exampleFileName)
+    
     # Variables pour l'alignement (formattage)
     probaNbOfChar = 2 + numberPrecision                     # Nb de caractères pris par une proba
     langNbOfChar = max(len(lang) for lang in langStrList)   # Nb de caractères max pris par une langue
@@ -99,13 +101,13 @@ def writeProbaToFile(outFileName, exampleFileName, exampleFileLang, probaArray, 
     footerStr = 'Fichier ' + exampleFileName + ' (langue : ' + exampleFileLang +')\n'
     # Et la moyenne des probas pour chaque colonne (= langue)
     average = np.round(probaArray.mean(axis=0), decimals=numberPrecision)
-    footerStr += 'Moyenne :\n' + numberDelimiter.join(str(average))
+    footerStr += 'Moyenne :\n' + numberDelimiter.join(np.char.mod('%.2f', average))
     footerStr += '\n'
     
     fmtValue = '%1.' + str(numberPrecision) + 'f'   # Format des nombres
     
-    with open(outFileName, 'a', encoding='utf-8', errors='ignore') as outFile:
-        np.savetxt("test.txt", probaArray, fmt=fmtValue, delimiter=numberDelimiter, newline='\n', header=headerStr, footer=footerStr, comments='')
+    with open(outFileName, 'ab') as outFile:
+        np.savetxt(outFile, probaArray, fmt=fmtValue, delimiter=numberDelimiter, newline='\n', header=headerStr, footer=footerStr, comments='')
 
 #fonction temporaire
 def generatePredict(model, predictFolder, language):
