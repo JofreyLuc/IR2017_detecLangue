@@ -78,26 +78,42 @@ def formatDataMemory(dataFileName, withoutLabel=False):
     else:
         return (X, Y)
 
-def writeProbaToFile(outFileName, probaArray, langStrList, numberPrecision=2, numberOfMinSpaces=2):
-    np.round(probaArray, decimals=numberPrecision)
-    probaNbOfChar = 2 + numberPrecision
-    langNbOfChar = max(len(lang) for lang in langStrList)
-    nbOfCharPerColumn = max(probaNbOfChar, langNbOfChar)
-    headerStr = ''
-    for lang in langStrList:
+def writeProbaToFile(outFileName, exampleFileName, exampleFileLang, probaArray, langStrList, numberPrecision=2, numberOfMinSpaces=2):
+    np.round(probaArray, decimals=numberPrecision)  # On arrondit les probas
+
+    # Variables pour l'alignement (formattage)
+    probaNbOfChar = 2 + numberPrecision                     # Nb de caractères pris par une proba
+    langNbOfChar = max(len(lang) for lang in langStrList)   # Nb de caractères max pris par une langue
+    nbOfCharPerColumn = max(probaNbOfChar, langNbOfChar)    # Nb de caractères dans chaque colonne
+    
+    # On forme le header avec le nom du fichier et les langages dans l'ordre
+    headerStr = 'Fichier ' + exampleFileName + ' (langue : ' + exampleFileLang +')\n'
+    for lang in langStrList:    # Ligne des langages
         offset = nbOfCharPerColumn - len(lang)
         headerStr += str(lang) + ' ' * (offset + numberOfMinSpaces) 
-    fmtValue = '%1.' + str(numberPrecision) + 'f'
+    
+    # Le séparateur entre tous les nombres à écrire (un certain nb d'espaces)
     numberDelimiter = ' ' * (nbOfCharPerColumn - probaNbOfChar + numberOfMinSpaces)
-    np.savetxt(outFileName, probaArray, fmt=fmtValue, delimiter=numberDelimiter, newline='\n', header=headerStr, comments='')
-        
+    
+    # On forme le footer avec le nom du fichier pour rappel
+    footerStr = 'Fichier ' + exampleFileName + ' (langue : ' + exampleFileLang +')\n'
+    # Et la moyenne des probas pour chaque colonne (= langue)
+    average = np.round(probaArray.mean(axis=0), decimals=numberPrecision)
+    footerStr += 'Moyenne :\n' + numberDelimiter.join(str(average))
+    footerStr += '\n'
+    
+    fmtValue = '%1.' + str(numberPrecision) + 'f'   # Format des nombres
+    
+    with open(outFileName, 'a', encoding='utf-8', errors='ignore') as outFile:
+        np.savetxt("test.txt", probaArray, fmt=fmtValue, delimiter=numberDelimiter, newline='\n', header=headerStr, footer=footerStr, comments='')
+
 #fonction temporaire
-def generatePredict(predictFolder, model):
+def generatePredict(model, predictFolder, language):
     langs = ['Arabe', 'Anglais', 'Francais', 'Allemand']
     for i in glob(predictFolder+'/*.hdf5'):
-        Xtest = formatDataMemory(i)
+        Xtest = formatDataMemory(i)[0]
         proba = model.predict_proba(Xtest, batch_size=128, verbose=0)
-        writeProbaToFile(path.splitext(i)+'.txt', proba, langs)
+        writeProbaToFile("probas.txt", path.splitext(i)[0], language, proba, langs)
             
 if __name__ == '__main__':
     # On récupère les données
@@ -126,7 +142,7 @@ if __name__ == '__main__':
     # On entraîne le modèle
     model.fit(X, Y, epochs=1, batch_size=128, validation_data=(Xdev, Ydev))
             
-    generatePredict(sys.argv[4], model)
+    generatePredict(model, sys.argv[4], sys.argv[5])
     
 #Formatte les données en le mettant dans un tableau hdf5 temporaire (utile pour les fichiers dépassant la taille de la ram)
 def formatDataHdf5(dataFileName, hdf5Tmp, withoutLabel=False):
