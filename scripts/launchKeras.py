@@ -7,6 +7,7 @@ import h5py
 import sys
 from os import remove, path
 from glob import glob
+import matplotlib.pyplot as plt
 
 # Paramètres
 #Affichage du traitement des données
@@ -14,9 +15,9 @@ AFFICHAGE = True
 # Nombre de coefficients cepstraux
 nbCoef = 13
 # Nombre de valeurs à prélever pour obtenir une "fenêtre de parole"
-nbVal = 31
+nbVal = 101
 # Décalage entre chaque prélevement de fenêtre de parole
-shift = 10
+shift = 1
 #Nombre de langages différents = de neurones en sortie
 nbSorties = 4
 
@@ -102,14 +103,14 @@ def writeProbaToFile(outFileName, exampleFileName, exampleFileLang, probaArray, 
     # Et la moyenne des probas pour chaque colonne (= langue)
     average = np.round(probaArray.mean(axis=0), decimals=numberPrecision)
     footerStr += 'Moyenne :\n' + numberDelimiter.join(np.char.mod('%.2f', average))
-    footerStr += '\n'
+    footerStr += '-------------------------------------------------------\n'
     
     fmtValue = '%1.' + str(numberPrecision) + 'f'   # Format des nombres
     
     with open(outFileName, 'ab') as outFile:
         np.savetxt(outFile, probaArray, fmt=fmtValue, delimiter=numberDelimiter, newline='\n', header=headerStr, footer=footerStr, comments='')
 
-#fonction temporaire
+#fonction temporaire : génère les fichiers txt pour voir les probas résultat
 def generatePredict(model, predictFolder, language):
     langs = ['Arabe', 'Anglais', 'Francais', 'Allemand']
     for i in glob(predictFolder+'/*.hdf5'):
@@ -142,9 +143,22 @@ if __name__ == '__main__':
     model.compile(loss='categorical_crossentropy', optimizer='RMSprop', metrics=['accuracy'])
 
     # On entraîne le modèle
-    model.fit(X, Y, epochs=1, batch_size=128, validation_data=(Xdev, Ydev))
-            
-    generatePredict(model, sys.argv[4], sys.argv[5])
+    history = model.fit(X, Y, epochs=100, batch_size=128, validation_data=(Xdev, Ydev))
+
+    plt.plot(history.history['acc'])
+    plt.plot(history.history['val_acc'])
+    plt.title('model accuracy')
+    plt.ylabel('accuracy')
+    plt.xlabel('epoch')
+    plt.legend(['train', 'dev'], loc='upper left')
+    plt.savefig('bar2.png')
+    
+    generatePredict(model, 'hdf5Predict/Arabic', 'Arabic')
+    generatePredict(model, 'hdf5Predict/English', 'English')
+    generatePredict(model, 'hdf5Predict/French', 'French')
+    generatePredict(model, 'hdf5Predict/German', 'German')
+
+
     
 #Formatte les données en le mettant dans un tableau hdf5 temporaire (utile pour les fichiers dépassant la taille de la ram)
 def formatDataHdf5(dataFileName, hdf5Tmp, withoutLabel=False):
