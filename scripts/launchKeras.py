@@ -249,13 +249,17 @@ if __name__ == '__main__':
     # On entraîne le modèle
     history = model.fit(X, Y, epochs=100, batch_size=128, validation_data=(Xdev, Ydev))
 
-    plt.plot(history.history['acc'])
+    print('\n')
+    print(X[1000])
+    print(Y[1000])
+    
     plt.plot(history.history['val_acc'])
     plt.title('model accuracy')
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
     plt.legend(['train', 'dev'], loc='upper left')
     plt.savefig('testAvecDivVariance.png')
+
     
     generatePredict(model, 'hdf5Predict/Arabic', 'Arabic')
     generatePredict(model, 'hdf5Predict/English', 'English')
