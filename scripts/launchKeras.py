@@ -15,9 +15,9 @@ AFFICHAGE = True
 # Nombre de coefficients cepstraux
 nbCoef = 13
 # Nombre de valeurs à prélever pour obtenir une "fenêtre de parole"
-nbVal = 101
+nbVal = 31
 # Décalage entre chaque prélevement de fenêtre de parole
-shift = 1
+shift = 10
 #Nombre de langages différents = de neurones en sortie
 nbSorties = 4
 
@@ -145,13 +145,16 @@ if __name__ == '__main__':
     # On entraîne le modèle
     history = model.fit(X, Y, epochs=100, batch_size=128, validation_data=(Xdev, Ydev))
 
-    plt.plot(history.history['acc'])
+    print('\n')
+    print(X[1000])
+    print(Y[1000])
+    
     plt.plot(history.history['val_acc'])
     plt.title('model accuracy')
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
-    plt.legend(['train', 'dev'], loc='upper left')
-    plt.savefig('bar2.png')
+    plt.legend(['dev'], loc='upper left')
+    plt.savefig('lawllawl.png')
     
     generatePredict(model, 'hdf5Predict/Arabic', 'Arabic')
     generatePredict(model, 'hdf5Predict/English', 'English')
