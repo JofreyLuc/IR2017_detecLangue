@@ -225,7 +225,9 @@ if __name__ == '__main__':
 
     # On calcule la variance de chaque coefficient mfcc
     # variances obtenues à l'aide de la fonction calculateVariances
-    variances = [ 8.44184971,  3.82373691,  2.00800991,  1.17921674,  1.13604367,  0.72418207,  0.55174363,  0.44808063,  0.40456247,  0.30078402,  0.27061722,  0.24347636, 0.05386801]#calculateVariances(dataFileName)
+    variances = [ 8.44184971,  3.82373691,  2.00800991,  1.17921674,  1.13604367,  0.72418207,  0.55174363,  0.44808063,  0.40456247,  0.30078402,  0.27061722,  0.24347636, 0.05386801]
+    #calculateVariances(dataFileName)
+
     # On concatène nbVal fois le tableau de variances afin de pouvoir effectuer la division en une seule fois
     variancesDuplicate = []
     for i in range(nbVal): variancesDuplicate[i*nbVal:] = variances
@@ -239,8 +241,8 @@ if __name__ == '__main__':
     model.add(Dense(inputShape, input_shape=(inputShape,), kernel_initializer='glorot_normal', activation='relu'))
     model.add(Dropout(0.2, input_shape=(inputShape,)))
     model.add(Dense(256, kernel_initializer='glorot_normal', activation='relu'))
-    #model.add(Dropout(0.2, input_shape=(inputShape,)))
-    #model.add(Dense(256, kernel_initializer='glorot_normal', activation='relu'))
+    model.add(Dropout(0.2, input_shape=(inputShape,)))
+    model.add(Dense(256, kernel_initializer='glorot_normal', activation='relu'))
     model.add(Dense(nbSorties, kernel_initializer='glorot_normal', activation='softmax'))
 
     # On compile le modèle
@@ -248,10 +250,6 @@ if __name__ == '__main__':
 
     # On entraîne le modèle
     history = model.fit(X, Y, epochs=100, batch_size=128, validation_data=(Xdev, Ydev))
-
-    print('\n')
-    print(X[1000])
-    print(Y[1000])
     
     plt.plot(history.history['val_acc'])
     plt.title('model accuracy')
