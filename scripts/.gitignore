@@ -7,3 +7,4 @@
 *.hdf5
 __pycache__
 testFiles/
+*.db
