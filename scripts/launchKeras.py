@@ -15,9 +15,9 @@ AFFICHAGE = True
 # Nombre de coefficients cepstraux
 nbCoef = 13
 # Nombre de valeurs à prélever pour obtenir une "fenêtre de parole"
-nbVal = 31
+nbVal = 101
 # Décalage entre chaque prélevement de fenêtre de parole
-shift = 10
+shift = 5
 #Nombre de langages différents = de neurones en sortie
 nbSorties = 4
 
@@ -239,9 +239,9 @@ if __name__ == '__main__':
     inputShape = nbVal * nbCoef
     model = Sequential()
     model.add(Dense(inputShape, input_shape=(inputShape,), kernel_initializer='glorot_normal', activation='relu'))
-    model.add(Dropout(0.2, input_shape=(inputShape,)))
+    model.add(Dropout(0.2))
     model.add(Dense(256, kernel_initializer='glorot_normal', activation='relu'))
-    model.add(Dropout(0.2, input_shape=(inputShape,)))
+    model.add(Dropout(0.2))
     model.add(Dense(256, kernel_initializer='glorot_normal', activation='relu'))
     model.add(Dense(nbSorties, kernel_initializer='glorot_normal', activation='softmax'))
 
@@ -255,8 +255,8 @@ if __name__ == '__main__':
     plt.title('model accuracy')
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
-    plt.legend(['train', 'dev'], loc='upper left')
-    plt.savefig('testAvecDivVariance.png')
+    plt.legend(['dev'], loc='upper left')
+    plt.savefig('testDropout101_5.png')
 
     
     generatePredict(model, 'hdf5Predict/Arabic', 'Arabic')

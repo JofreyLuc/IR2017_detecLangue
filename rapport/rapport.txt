@@ -1,0 +1,103 @@
+STRUCTURE :
+
+Introduction  ~OK
+Schéma et présentation générale
+
+    - Réseaux de neurones ~A COMPLETER (besoin de formater les données de manière précise)
+
+    - Schéma (avec explications "détaillées" associés) ~A COMPLETER
+
+
+Partie 1 - Prétraitement
+
+    - Intro (pourquoi prétraiter + format de données visé)
+
+    - Présentation des données
+
+    - Sélection données utilisables (suppression des blancs, sox)
+
+    - HTK  (présentation + utilisation)
+
+    - HDF5 + h5py (présentation + utilisation)
+
+
+Partie 2 - Réseau
+
+    - Intro (maintenant qu'on a les données, keskonenfé)
+
+    - Présentation Keras générale + notre utilisation (komensamarche)
+
+    - Keras - Perceptron multicouche
+
+    - Présentation perceptron (avec schémas)
+
+    - Formatage des données pour ce réseau (shift, nbVecteurs etc.)
+
+    - Essais et échecs (visualisation résultats etc.)
+
+
+    - Keras LSTM (réseau récurrent) (avec schémas)
+
+    - Présentation réseau récurrent
+
+    - Formatage des données pour ce réseau
+
+    - Essais et échecs
+
+
+Conclusion
+
+
+
+
+
+
+I. Introduction
+Aujourd'hui, on dispose de moyens assez efficaces pour transformer automatiquement un texte prononcé dans un fichier audio en sa transcription écrite (par exemple, l'outil de sous-titrage automatique de Youtube). Le problème avec ces outils est qu'ils nécessitent presque toujours de savoir en quelle langue le texte est prononcé pour pouvoir le transcrire efficacement.
+L'objectif de ce projet d'initiation à la recherche est de parvenir à détecter automatiquement la langue parlée dans un fichier audio. Cette détection automatique pourrait permettre de directement transcrire le discours prononcé dans le fichier, en utilisant la "bibliothèque" vocale correspondant à la langue parlée.
+Pour ce faire, on utilisera des méthodes d'apprentissage automatique (machine learning) basées sur des réseaux de neurones profonds.
+Dans un premier temps, le but sera de construire un réseau de neurones capable de déterminer, pour un fichier audio donné en entrée, s'il s'agit d'un discours prononcé en allemand, anglais, arabe ou français.
+Ensuite, selon les performances du réseau précédent, nous tenterons de créer un système capable de détecter la langue d'un contenu audio de manière dynamique. Ainsi, nous pourrions repérer automatiquement, par exemple, une citation prononcée en anglais dans un contenu globalement allemand et donc pouvoir la transcrire en utilisant une bibliothèque vocale anglaise et non allemande.
+II. Présentation du sujet et des technologies utilisées
+A. Les réseaux de neurones artificiels
+Les réseaux de neurones sont des modèles mathématiques qui sont souvent utilisés dans le domaine de l'apprentissage automatique, en tant qu'outils permettant de faire de la reconnaissance de formes, sons, etc. Grâce à des « couches » successives (le réseau) d'unités de calcul (les neurones) qui sont « excités » ou non selon leur entrée (ce qui donne un résultat binaire) et qui « s'autorégulent » pour s'approcher du résultat attendu, ces outils, si on leur donne un ensemble de données d'apprentissage suffisamment vaste, peuvent détecter des caractéristiques (comme la langue d'un discours) de manière assez précise. L'utilisation d'un réseau de neurones consiste en deux phases : tout d'abord l'apprentissage, où l'on va fournir au réseau un ensemble de données « étiquetées » (dans notre cas, des discours marqués comme étant dans une langue en particulier) de manière à ce qu'il puisse déterminer si il a réussi à donner la bonne réponse ou non, et se réguler en conséquence. Une fois que le réseau obtient une marge d'erreur suffisamment basse sur cet ensemble d'apprentissage, on peut l'utiliser pour faire de la détection sur d'autres ensembles de données inconnues.
+B. Présentation de Keras
+Keras est une librairie open-source Python utilisée pour construire des réseaux de neurones artificiels. L'avantage de cette librairie est qu'elle est très haut niveau. Elle permet donc de créer des réseaux de neurones très rapidement et très simplement. En effet, cette dernière n'est en quelque sorte qu'une "interface de surcouche" qui se place au-dessus de librairies de réseaux de neurones plus bas niveaux comme Theano qui est la sous-couche que nous utiliserons avec Keras.  
+C. Mise en forme des données
+1. Harmonisation du corpus d'apprentissage
+Comme expliqué précédemment, afin de faire fonctionner notre réseau de neurones, il faut tout d'abord lui donner un corpus d'apprentissage. Nous disposons donc de fichiers audio en différentes langues bien identifiés qui vont être utilisés dans la phase d'apprentissage.
+Cependant, certains de ces fichiers audio peuvent poser problème. En effet, certains commencent ou finissent avec un passage musical ou un silence qui représente une partie non négligeable du fichier. Le problème étant que si un silence ou un passage musical est présent au début ou à la fin dans tous les fichiers audio anglais par exemple, le réseau de neurones risque d'apprendre ce silence ou cette musique comme étant de l'anglais et ainsi de biaiser les résultats sur de futures analyses.
+De tels problèmes sont présents sur différents fichiers du corpus dont nous disposons :
+les extraits en anglais (venant de conférences TEDx) commencent tous par un extrait musical suivi d'applaudissements ;
+les extraits en allemand commencent et se terminent par un silence non négligeable.
+Il est donc nécessaire d'enlever ces passages indésirables de manière automatisée (les retirer à la main aurait demandé beaucoup trop de temps étant donné le grand nombre d'extraits, et il aurait été nécessaire de le refaire pour chaque futur corpus). Pour cela, nous utilisons les transcriptions des extraits audio, qui contiennent les temps précis de début et de fin des phrases prononcées.
+2. Conversion de l'audio en coefficients acoustiques
+L'étape suivante avant de pouvoir construire un réseau de neurones avec Keras est de traiter les fichiers audio pour les transformer en un format de données utilisable, c'est-à-dire dans notre cas sous la forme de coefficients acoustiques.
+D. Présentation de HTK
+Pour effectuer la conversion des fichiers audio en coefficients acoustiques, nous utilisons HTK, un logiciel multiplateforme développé par le département d'ingénierie de l'Université de Cambridge, qui est une sorte de « boîte à outils » permettant de réaliser toutes sortes de manipulations utiles à la reconnaissance de la parole. Il permet notamment d'effectuer de manière très simple la conversion de fichiers audio en coefficients acoustiques correspondants : les fichiers MFCC (Mel-frequency cepstral coefficients).
+E. Présentation du format de données HDF5 et de la librairie h5py
+Pour éviter un maximum les régularités dans les fichiers de données qui pourraient biaiser le processus d'apprentissage, Keras va mélanger les données qu'il reçoit en entrée pour les traiter dans un ordre aléatoire. Pour ce faire, il est nécessaire de lui fournir l'intégralité des données en une seule fois. Comme la taille de la quantité de données générée par la transformation des fichiers audio en coefficients acoustiques est trop importante pour pouvoir charger les données directement en mémoire vive, nous utiliserons le format de données HDF5, qui permet de transmettre des données à un logiciel en les chargeant directement depuis le disque dur. Cela résout notre problème, même si la vitesse de traitement s'en trouve diminuée. Nous utiliserons une implémentation Python de HDF5 : h5py.
+F. Schémas récapitulatifs des différentes phases de traitement du projet
+Le cycle décrit ci-dessus n'est pas à répéter à chaque fois. En effet, une fois les fichiers MFCC générés pour un corpus, il n'est pas nécessaire de les générer à nouveau et on peut les réutiliser à chaque fois. Il est cependant nécessaire de recommencer le cycle si jamais le corpus d'apprentissage (les fichiers audio) vient à changer.
+III. Travail réalisé
+A Mise en place et installation de Keras
+La première étape du projet a consisté en l'installation des logiciels et librairies nécessaires au fonctionnement de l'ensemble du projet sur nos ordinateurs personnels. Le plus important de ces logiciels est Keras qui va nous permettre de créer notre réseau de neurones artificiels.
+Nous utilisons deux systèmes d'exploitation différents : Alexis utilise Windows 8.1 et Jofrey, Debian. Le processus d'installation et les possibilités offertes par Keras varient entre ces deux architectures.
+Pour installer Keras, il est nécessaire d'avoir installé au préalable :
+la librairie Theano (ou tout autre sous-couche supporté par Keras);
+un interpréteur Python (avec les librairies Numpy, Scipy, etc.) ;
+éventuellement un outil « d'interfaçage » avec la carte graphique.
+Il y a deux façons d'utiliser un réseau de neurones généré par Keras : en se reposant sur la puissance de calcul du processeur (CPU) ou sur celle de la carte graphique (GPU), le parallélisme offert par le GPU permettant d’accélérer considérablement le temps de traitement. Un tel outil d'interfaçage permet simplement à un programme d'exécuter ses calculs sur le GPU plutôt que sur le CPU.
+Sous Windows, il est compliqué de faire fonctionner correctement Keras sur le GPU, car la compatibilité de la solution d'interfaçage n'est pas vraiment supportée par les développeurs. Sur les systèmes Linux en revanche, une marche à suivre existe pour utiliser CUDA (Compute Unified Device Architecture), un outil développé par la marque Nvidia pour les cartes Nvidia, qui est souvent utilisé dans le domaine de l'apprentissage ou de l'intelligence artificielle.
+Néanmoins, nous avons tout d'abord pu installer Keras en mode CPU sur Windows sans problème majeur, et essayer de créer quelques réseaux/programmes d'exemple. Nous avons ensuite essayé de l'installer sur Debian en mode GPU pour pouvoir tester et voir si la rapidité de calcul était effectivement augmentée. Malheureusement, les pilotes des cartes Nvidia (bien entendu nécessaires pour l'utilisation de CUDA) pour Debian ne sont pas toujours parfaits, et après quelques heures de manipulations et plusieurs mises hors service de l'environnement graphique Debian, nous avons abandonné l'idée d'utiliser cet environnement pour installer Keras. 
+Comme nous savions que nos encadrants avaient déjà pu installer et utiliser Keras en mode GPU sur un environnement Ubuntu, nous avons ­décidé d'en utiliser un également et avons repris l'installation sur une version nouvellement installée de ce système. Avec l'aide d'un tutoriel rédigé à cet effet, nous avons pu finaliser l'installation sans encombre.
+G. Harmonisation des fichiers audio
+Nous avons écrit le script prévu en Python afin d'extraire les temps de passage de « vraie parole » à l'aide des fichiers de transcription. Pour cela, nous coupons le reste de l'audio des fichiers en utilisant le programme Sox (une boîte à outils permettant de faire diverses opérations sur des fichiers audio).
+H. Utilisation de HTK
+Nous avons donc téléchargé HTK, puis avons essayé de l'utiliser pour traiter quelques fichiers audio de test afin de se familiariser avec cet outil (utilisation de HCopy pour faire la conversion).
+Pour effectuer la conversion, il est nécessaire de fournir à HTK un fichier de configuration qui décrit : 
+les caractéristiques des .mfcc de sortie (nombre de vecteurs, taille de la fenêtre mouvante, etc.) ;
+les options de compression ;
+les options de prétraitement (utilisation d'une fenêtre de Hamming, etc.) ;
+beaucoup d'autres (la documentation étant très fournie).
+
