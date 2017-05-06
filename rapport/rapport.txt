@@ -1,11 +1,11 @@
 STRUCTURE :
 
-Introduction  ~OK
+Introduction  ~OK (J)
 Schéma et présentation générale
 
-    - Réseaux de neurones ~A COMPLETER (besoin de formater les données de manière précise)
+    - Réseaux de neurones ~A COMPLETER (besoin de formater les données de manière précise) (J)
 
-    - Schéma (avec explications "détaillées" associés) ~A COMPLETER
+    - Schéma (avec explications "détaillées" associés) (A : schéma) (J : explications)
 
 
 Partie 1 - Prétraitement
@@ -16,7 +16,7 @@ Partie 1 - Prétraitement
 
     - Sélection données utilisables (suppression des blancs, sox)
 
-    - HTK  (présentation + utilisation)
+    - HTK (présentation + utilisation)
 
     - HDF5 + h5py (présentation + utilisation)
 
@@ -49,7 +49,7 @@ Conclusion
 
 
 
-
+ANCIEN RAPPORT : 
 
 
 I. Introduction
