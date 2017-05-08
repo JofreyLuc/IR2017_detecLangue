@@ -1,4 +1,4 @@
-STRUCTURE :
+﻿STRUCTURE :
 
 Introduction  ~OK (J)
 Schéma et présentation générale
@@ -12,11 +12,16 @@ Partie 1 - Prétraitement
 
     - Intro (pourquoi prétraiter + format de données visé)
 
-    - Présentation des données
+    - Présentation des données 
+    	
+	Concernant les 2 parties précédentes :
+	(A, commencé)
+	A INVERSER OU REGROUPER ? 
+	A VOIR ENSEMBLE
 
-    - Sélection données utilisables (suppression des blancs, sox)
+    - Sélection données utilisables (suppression des blancs, sox) (A, ~fait)
 
-    - HTK (présentation + utilisation)
+    - HTK (présentation + utilisation) (A, à compléter)
 
     - HDF5 + h5py (présentation + utilisation)
 
