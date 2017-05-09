@@ -1,11 +1,11 @@
 ﻿STRUCTURE :
 
-Introduction  ~OK (J)
+Introduction  OK
 Schéma et présentation générale
 
-    - Réseaux de neurones ~A COMPLETER (besoin de formater les données de manière précise) (J)
+    - Réseaux de neurones ~OK
 
-    - Schéma (avec explications "détaillées" associés) (A : schéma) (J : explications)
+    - Schéma (avec explications "détaillées" associés) ~OK
 
 
 Partie 1 - Prétraitement
@@ -34,38 +34,70 @@ Partie 2 - Réseau
 
     - Keras - Perceptron multicouche
 
-    - Présentation perceptron (avec schémas)
+        - Présentation perceptron (avec schémas)
 
-    - Formatage des données pour ce réseau (shift, nbVecteurs etc.)
+    	- Formatage des données pour ce réseau (shift, nbVecteurs etc.)
 
-    - Essais et échecs (visualisation résultats etc.)
+	- Essais et échecs (visualisation résultats etc.)
 
 
     - Keras LSTM (réseau récurrent) (avec schémas)
 
-    - Présentation réseau récurrent
+        - Présentation réseau récurrent
 
-    - Formatage des données pour ce réseau
+	- Formatage des données pour ce réseau
 
-    - Essais et échecs
+    	- Essais et échecs
 
 
 Conclusion
+
+
+NOUVEAU RAPPORT :
+
+
+I. Introduction et problématique
+
+Aujourd'hui, on dispose de moyens assez efficaces pour transformer automatiquement un texte prononcé dans un fichier audio en sa transcription écrite (par exemple, l'outil de sous-titrage automatique de Youtube). Le problème avec ces outils est qu'ils nécessitent presque toujours de savoir en quelle langue le texte est prononcé pour pouvoir le transcrire efficacement.
+L'objectif de ce projet d'initiation à la recherche est de parvenir à détecter automatiquement la langue parlée dans un fichier audio. Cette détection automatique pourrait permettre de directement transcrire le discours prononcé dans le fichier, en utilisant la "bibliothèque" vocale correspondant à la langue parlée.
+Pour ce faire, on utilisera des méthodes d'apprentissage automatique (machine learning) basées sur des réseaux de neurones profonds.
+Dans un premier temps, le but sera de construire un réseau de neurones capable de déterminer, pour un fichier audio donné en entrée, s'il s'agit d'un discours prononcé en allemand, anglais, arabe ou français.
+Ensuite, selon les performances du réseau précédent, nous tenterons de créer un système capable de détecter la langue d'un contenu audio de manière dynamique. Ainsi, nous pourrions repérer automatiquement, par exemple, une citation prononcée en anglais dans un contenu globalement allemand, pour pouvoir ainsi faciliter la transcription automatique d'un tel texte.
+
+
+II. Présentation générale
+
+A. Les réseaux de neurones artificiels
+
+*** Petit schéma réseau de neurones ***
+
+Les réseaux de neurones sont des modèles mathématiques qui sont souvent utilisés dans le domaine de l'apprentissage automatique, en tant qu'outils permettant de faire de la reconnaissance de formes, sons, etc. Grâce à des « couches » successives (le réseau) d'unités de calcul (les neurones) qui sont « excités » ou non selon leur entrée (ce qui donne un résultat binaire) et qui « s'autorégulent » pour s'approcher du résultat attendu, ces outils, si on leur donne un ensemble de données d'apprentissage suffisamment vaste, peuvent détecter des caractéristiques (comme la langue d'un discours) de manière assez précise.
+L'utilisation d'un réseau de neurones consiste en deux phases : tout d'abord l'apprentissage, où l'on va fournir au réseau un ensemble de données « étiquetées » (dans notre cas, des discours marqués comme étant dans une langue en particulier) de manière à ce qu'il puisse déterminer si il a réussi à donner la bonne réponse ou non, et se réguler en conséquence. Une fois que le réseau obtient une marge d'erreur suffisamment basse sur cet ensemble d'apprentissage, on peut l'utiliser pour faire de la détection sur d'autres ensembles de données inconnues, qui ne sont donc pas étiquetées.
+On dit qu'un réseau de neurones est "profond" si il est constitué de plusieures couches de neurones successives : ces réseaux sont souvent plus efficaces sur des problèmes de reconnaissance complexes car les multiples couches leur permettent "d'affiner" successivement ce qui est reconnu (par exemple, pour de la reconnaissance d'images, une première couche pourrait distinguer plusieurs zones de l'image, une seconde les contours des formes qui apparaissent dans ces zones, etc.)
+
+B. Notre travail
+
+L'objectif de ce projet de recherche n'est pas de construire un réseau de neurones par nous-mêmes (nous n'en aurions pas le temps). Pour cette raison, nous allons utiliser une librairie python, appelée Keras, qui permet de créer des réseaux de neurones standard de manière très simple et rapide. Notre but sera donc de comprendre comment fonctionne cette librairie, puis de l'utiliser pour construire un (ou plusieurs) réseau qui permettrait de répondre à notre problématique (qui peut donc se résumer par : "Est-il possible d'utiliser un réseau de neurones pour détecter automatiquement la langue d'un contenu audio ?").
+Néanmoins, avant de pouvoir utiliser un réseau de neurones, il est nécessaire de traiter correctement les données dont nous disposons en entrée. Ce prétraitement sera une part importante de notre travail.
+
+Nous avons à disposition un corpus de données audio provenant de sources diverses (émissions de radio, conférences...). Comme tout enregistrement audio, ce fichiers contiennent un certain nombre de passages qui ne sont pas de la parole à proprement dire (musique, applaudissements, silences...), et si ces passages sont trop présents ou trop réguliers, cela risque de biaiser les résultats de notre réseau #Note de bas de page : Par exemple, si des applaudissements ne sont présents que dans les fichiers étiquetés comme étant de l'anglais, le réseau risque de considérer tout applaudissement qu'il pourrait entendre dans le futur comme étant de l'anglais. Cela fausserait à la fois la reconnaissance d'un passage non-anglais dans lequel se trouvent des applaudissements, mais aussi celle des passages en anglais sans applaudissements, car le réseau pourrait considérer que leur absence indique que le morceau n'est pas de l'anglais. # Dans un premier temps, nous traiterons donc les fichiers audio afin de supprimer de tels passages.
+
+Se pose ensuite la question de la représentation des données. En effet, un fichier audio est la plupart du temps représenté par un "simple" signal, tandis que le couche d'entrée du réseau attend un certain nombre de valeurs réelles (une par neurone). Nous devons donc transformer les fichiers audio en ensembles de valeurs réelles, à l'aide de transformées de Fourier. Nous utiliserons pour cela un logiciel appelé HTK, qui nous permettra de transformer les signaux audio en ensembles de coefficients accoustiques de manière très simple.
+
+Pour stocker ces ensembles de données, nous utiliserons le format de fichier HDF5, qui permet de classer des groupes de données de manière pratique dans un seul fichier, et qui offre la possibilité d'ere lu directement sur le disque dur (sans être chargé en mémoire centrale), ce qui pourrait nous être utile par la suite.
+
+Quand nous aurons crée ce fichier contenant nos données d'apprentissage, le prétraitement sera terminé. Cepandant, avant de pouvoir entrer toutes ces valeurs dans le réseau de neurones, il nous sera encore nécessaire de les formater correctement; en effet, nous ne pouvons pas simplement "envoyer" l'ensemble de données d'apprentissage directement dans le réseau : selon son type, il faudra les séparer en plusieurs sous-ensembles (qui pourront même parfois contenir des données de base dupliquées) de taille fixe, et ne pas oublier "d'étiqueter" ces données (afin d'indiquer au réseau ce qu'il est en train d'apprendre).
+
+Enfin, une fois que le format des données sera correct, il nous restera à créer le réseau proprement dit en quelques lignes de code, lui faire apprendre toutes l'ensemble d'apprentissage, puis réaliser des tests sur des données nouvelles et affiner ses paramètres pour diminuer son taux d'erreur.
+
+*** Schéma global ***
 
 
 
 ANCIEN RAPPORT : 
 
 
-I. Introduction
-Aujourd'hui, on dispose de moyens assez efficaces pour transformer automatiquement un texte prononcé dans un fichier audio en sa transcription écrite (par exemple, l'outil de sous-titrage automatique de Youtube). Le problème avec ces outils est qu'ils nécessitent presque toujours de savoir en quelle langue le texte est prononcé pour pouvoir le transcrire efficacement.
-L'objectif de ce projet d'initiation à la recherche est de parvenir à détecter automatiquement la langue parlée dans un fichier audio. Cette détection automatique pourrait permettre de directement transcrire le discours prononcé dans le fichier, en utilisant la "bibliothèque" vocale correspondant à la langue parlée.
-Pour ce faire, on utilisera des méthodes d'apprentissage automatique (machine learning) basées sur des réseaux de neurones profonds.
-Dans un premier temps, le but sera de construire un réseau de neurones capable de déterminer, pour un fichier audio donné en entrée, s'il s'agit d'un discours prononcé en allemand, anglais, arabe ou français.
-Ensuite, selon les performances du réseau précédent, nous tenterons de créer un système capable de détecter la langue d'un contenu audio de manière dynamique. Ainsi, nous pourrions repérer automatiquement, par exemple, une citation prononcée en anglais dans un contenu globalement allemand et donc pouvoir la transcrire en utilisant une bibliothèque vocale anglaise et non allemande.
 II. Présentation du sujet et des technologies utilisées
-A. Les réseaux de neurones artificiels
-Les réseaux de neurones sont des modèles mathématiques qui sont souvent utilisés dans le domaine de l'apprentissage automatique, en tant qu'outils permettant de faire de la reconnaissance de formes, sons, etc. Grâce à des « couches » successives (le réseau) d'unités de calcul (les neurones) qui sont « excités » ou non selon leur entrée (ce qui donne un résultat binaire) et qui « s'autorégulent » pour s'approcher du résultat attendu, ces outils, si on leur donne un ensemble de données d'apprentissage suffisamment vaste, peuvent détecter des caractéristiques (comme la langue d'un discours) de manière assez précise. L'utilisation d'un réseau de neurones consiste en deux phases : tout d'abord l'apprentissage, où l'on va fournir au réseau un ensemble de données « étiquetées » (dans notre cas, des discours marqués comme étant dans une langue en particulier) de manière à ce qu'il puisse déterminer si il a réussi à donner la bonne réponse ou non, et se réguler en conséquence. Une fois que le réseau obtient une marge d'erreur suffisamment basse sur cet ensemble d'apprentissage, on peut l'utiliser pour faire de la détection sur d'autres ensembles de données inconnues.
 B. Présentation de Keras
 Keras est une librairie open-source Python utilisée pour construire des réseaux de neurones artificiels. L'avantage de cette librairie est qu'elle est très haut niveau. Elle permet donc de créer des réseaux de neurones très rapidement et très simplement. En effet, cette dernière n'est en quelque sorte qu'une "interface de surcouche" qui se place au-dessus de librairies de réseaux de neurones plus bas niveaux comme Theano qui est la sous-couche que nous utiliserons avec Keras.  
 C. Mise en forme des données
@@ -105,4 +137,7 @@ les caractéristiques des .mfcc de sortie (nombre de vecteurs, taille de la fen�
 les options de compression ;
 les options de prétraitement (utilisation d'une fenêtre de Hamming, etc.) ;
 beaucoup d'autres (la documentation étant très fournie).
+
+
+
 
