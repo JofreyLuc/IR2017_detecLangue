@@ -56,6 +56,8 @@ Ensuite, selon les performances du réseau précédent, nous tenterons de créer
 
 \subsection{Les réseaux de neurones artificiels}
 
+Voir \cite{joulion90}, \cite{lecun2015}.
+
 Les réseaux de neurones artificiels sont des modèles mathématiques qui sont souvent utilisés dans le domaine de l'apprentissage automatique, en tant qu'outils permettant de faire de la reconnaissance de formes et de l'intelligence artificielle. Grâce à des ``couches'' successives (le réseau) d'unités de calcul (les neurones) sont ``excités'' ou non selon leur entrée (ce qui donne un résultat binaire) et ``s'autorégulent'' pour s'approcher du résultat attendu. Si on leur donne un ensemble de données d'apprentissage suffisamment vaste, ces outils peuvent détecter des caractéristiques (comme la langue d'un discours) de manière assez précise.\\
 \\
 L'utilisation d'un réseau de neurones consiste en deux phases : tout d'abord l'apprentissage, où on fournit au réseau un ensemble de données ``étiquetées'' (dans notre cas, des fichiers audio marqués comme étant dans une langue en particulier) de manière à ce que le réseau de neurones puisse déterminer si il a réussi à donner la bonne réponse ou non, et se réguler en conséquence. Une fois que le réseau obtient une marge d'erreur suffisamment basse sur cet ensemble d'apprentissage, on peut l'utiliser pour faire de la détection sur d'autres ensembles de données inconnues, qui ne sont donc pas étiquetées.\\
@@ -159,11 +161,10 @@ Certains des fichiers audio utilisés peuvent poser problème durant la phase d'
 \newpage
 
 Nous pourrions utiliser directement les signaux audio en entrée de notre réseau de neurones : il nous suffirait par exemple de relever la valeur du signal tous les X intervalles de temps et de fournir directement ces valeurs au réseau. Cependant, dans le domaine de la reconnaissance de parole, on utilise plutôt des signaux paramétrisés.
-La paramétrisation d'un signal consiste en l'extraction d'un ensemble spécifique de caractéristiques de ce signal. \\
+La paramétrisation d'un signal consiste en l'extraction d'un ensemble spécifique de caractéristiques de ce signal. Actuellement, la paramétrisation la plus utilisée et la plus efficace est celle des coefficients MFCC\cite{haton2006} (Mel-frequency cepstral coefficients). Ils ont entre autres comme avantage d'être peu sensibles à la puissance acoustique du signal. Cela permet d'atténuer le poids de cette caractéristique qui ne présente généralement que peu d'intérêt dans le domaine de la reconnaissance de parole (comme c'est le cas pour notre projet).\\
 \\
-*** A PRECISEEEEEER ***\\
 Pour effectuer cette paramétrisation, nous utilisons HTK\\
- ***RENVOI VERS HTK***\\, un logiciel multiplateforme développé par le département d'ingénierie de l'Université de Cambridge, qui est une sorte de ``boîte à outils'' permettant de réaliser toutes sortes de manipulations utiles à la reconnaissance de la parole. Il permet notamment d'effectuer de manière très simple la paramétrisation de fichiers audio en coefficients acoustiques correspondants. Les fichiers ainsi obtenus sont des fichiers .mfcc (Mel-frequency cepstral coefficients).
+ ***RENVOI VERS HTK***\\, un logiciel multiplateforme développé par le département d'ingénierie de l'Université de Cambridge, qui est une sorte de ``boîte à outils'' permettant de réaliser toutes sortes de manipulations utiles à la reconnaissance de la parole. Il permet notamment d'effectuer de manière très simple la paramétrisation de fichiers audio en coefficients acoustiques correspondants. Les fichiers ainsi obtenus sont des fichiers .mfcc.
  
 \subsection{Stockage des données}
 
