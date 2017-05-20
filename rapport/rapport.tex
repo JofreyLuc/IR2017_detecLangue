@@ -4,12 +4,35 @@
 \usepackage[french]{babel}
 \usepackage{graphicx}
 \usepackage{pifont}
+\usepackage{xcolor}
 \usepackage[left=2.5cm,right=2.5cm,top=3cm,bottom=3cm]{geometry}
 \renewcommand{\baselinestretch}{1.3}
-\lstset{
-  basicstyle=\small,
-  mathescape
-}
+
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+
+% Default fixed font does not support bold face
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{12} % for bold
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{12}  % for normal
+
+\newcommand\pythonstyle{\lstset{
+  language=Python,
+  backgroundcolor=\color{white}, 
+  basicstyle=\ttm\small,
+  %otherkeywords={self},            
+  %keywordstyle=\ttb\color{deepblue},
+  emph={MyClass,__init__},          
+  emphstyle=\ttb\color{deepred},    
+  %stringstyle=\color{deepgreen},
+  commentstyle=\color{red}, 
+  frame=tb,                         
+  showstringspaces=false,
+  inputencoding=utf8,
+  extendedchars=true,
+  literate={é}{{\'e}}1 {î}{{\^i}}1 {ê}{{\^e}}1 {è}{{\`e}}1 {à}{{\`a}}1
+}}
+ 
 \lstset{literate=
   {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
   {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
@@ -25,6 +48,7 @@
   {€}{{\euro}}1 {£}{{\pounds}}1 {«}{{\guillemotleft}}1
   {»}{{\guillemotright}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {¿}{{?`}}1
 }
+
 \author{Alexis Lanoix et Jofrey Luc}
 \title{Rapport init recherche}
 \date{02/05/2017}
@@ -33,6 +57,10 @@
 
 \tableofcontents
 \newpage
+
+\newcommand\pythonexternal[2][]{{
+\pythonstyle
+\lstinputlisting[#1]{#2}}}
 
 \section{Introduction et problématique}
 
@@ -193,24 +221,42 @@ Une fois les données mises en bonne forme dans notre fichier HDF5, nous pouvons
 
 Keras est une librairie open-source Python utilisée pour construire, entraîner et manipuler des réseaux de neurones artificiels, développée par François Chollet dans le cadre du projet de recherche ONEIROS (Open-ended Neuro-Electronic Intelligent Robot Operating System). L'avantage de cette librairie est qu'elle est très haut niveau, elle permet donc de créer des réseaux de neurones très rapidement et très simplement. En effet, cette dernière n'est en quelque sorte qu'une "interface de surcouche" qui se place au-dessus de librairies de réseaux de neurones plus bas niveau comme Theano, qui est la sous-couche que nous utiliserons avec Keras.\\
  \\
-Il est possible de créer un réseau de neurones (parfois complexe) avec Keras en littéralement quelques lignes :
+Il est possible de créer un réseau de neurones (parfois complexe) avec Keras en littéralement quelques lignes :\\
 
-\begin{lstlisting}
-model = Sequential()            # création d’un modèle séquentiel
-model.add(Dense(units=64, input_dim=100))    # ajout d’une couche
-model.add(Activation('relu'))            # et de sa fonction d’activation
-
-model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])            # permet de configurer différents paramètres de la phase d’apprentissage du réseau
-
-# lance la phase d’apprentissage sur 5 epochs
-model.fit(x_train, y_train, epochs=5, batch_size=32)
-\end{lstlisting}
+\pythonexternal[showstringspaces=false, breaklines=true,breakatwhitespace=true]{exempleReseau.py}
 
 De plus, Keras est très pratique à utiliser en python (les réseaux créés fonctionnant avec des tableaux numpy classiques\footnote{Numpy est une bibliothèque scientifique très utilisée en Python, qui offre notamment la possibilité de réaliser simplement des calculs matriciels.}) et dispose de beaucoup d'options, qui permettent par exemple d'interrompre l'apprentissage dès qu'on le juge nécessaire, de sauvegarder un modèle de réseau, d'optimiser la lecture depuis un fichier HDF5...
 
 \subsection{Définir l'architecture du réseau}
 
+*** Renvoi biblio vers l'article Y.LeCun***
+
+\subsubsection{Généralités sur la création de réseaux de neurones}
+Lorsque on crée un réseau de neurones, il est nécessaire d'en définir la structure. Le premier paramètre de cette structure est le nombre de couches du réseau. Ajouter plus de couches permet d'apprendre des paramètres plus ``précis'' sur les données. Ce qui n'est pas forcément une bonne chose si ces paramètres représentent moins bien la caractéristique des entrées que l'on cherche à déterminer (la langue dans notre cas).\\
+ \\
+Il nous faut aussi déterminer la taille de ces couches (le nombre de neurones qu'elles contiennent). La taille de la couche d'entrée doit être la même que le nombre de valeurs contenues dans un exemple du corpus d'apprentissage, et la taille de la couche de sortie dépend du nombre de langues différentes qu'on souhaite détecter. La taille des couches cachées est quand à elle habituellement comprise entre celle de la couche d'entrée et celle de la couche de sortie; c'est un des paramètres que l'on peut ajuster pour améliorer la performance du réseau.\\
+ \\
+Chacune de ces couches comporte une fonction d'activation (qui sera appliquée à chacun des neurones de la couche). Cette fonction régit la sortie du neurone en comparant la somme des poids à un seuil. Il existe différents types de fonctions d'activation, qui peuvent se comporter de manière différente : on utilise souvent une fonction différente de celle des autres couches pour la couche de sortie, par exemple.\\
+ \\
+Enfin, il existe différents types de réseaux de neurones, qui ont un fonctionnement interne différent.  Pour ce projet, nous en avons considéré deux : un perceptron multi-couches et un réseau LSTM (Long Short-Term Memory).
+ 
+\subsubsection{Perceptron multi-couches}
+
+Le perceptron multi-couches est un des modèles de réseau les plus simples à mettre en œuvre mais qui peut donner de très bons résultats. C'est historiquement un des tout premiers modèles d'apprentissage supervisé. Il est ``simplement'' constitué de plusieurs couches de neurones, la sortie des neurones d'une couche constituant l'entrée des neurones de la couche suivante.\\
+ \\
+Pour ce perceptron multi-couches, nous utilisons deux couches de taille (nombre de valeurs dans un vecteur acoustique * nombre de vecteurs dans une trame) dont la couche d'entrée, pour avoir effectivement un neurone par valeur réelle, et une couche de sortie de taille 4, puisque nous avons 4 langages possibles différents. Entre les deux, nous avons deux couches cachées, dont nous avons fixé la taille à 256 (suivant les instructions de nos encadrants).\\
+La fonction d'activation des couches d'entrée et des couches cachées est une fonction ReLU (Rectified Linear Unit) : il s'agit plus ou moins de la fonction la plus efficace, de manière générale, pour le moment pour cette application précise. 
+*** Fonction ReLU (RHA DES MATHS) ***
+La fonction d'activation de la couche de sortie est une fonction softmax : c'est à dire que, pour chaque entrée, le réseau générera 4 probabilités dont la somme est égale à 1 : la probabilité que l'entrée soit du français, la probabilité que l'entrée soit de l'allemand... et donnera en sortie la langue dont la probabilité est la plus élevée.
+*** Code commenté de la création du perceptron ***
+
+\subsubsection{Réseau LSTM (Long Short-Term Memory)}
+
 \subsection{Apprendre les paramètres du réseau sur le corpus d'apprentissage}
+
+\subsubsection{Généralités sur les mécanismes d'apprentissage}
+\subsubsection{Formatage des données pour le perceptron multi-couches}
+\subsubsection{Résultat de l'apprentissage sur le perceptron multi-couches}
 
 \subsection{Utiliser le réseau pour étiqueter le corpus de test}
 
