@@ -3,7 +3,8 @@
 \usepackage{listings}
 \usepackage[french]{babel}
 \usepackage{graphicx}
-\usepackage[left=2cm,right=2cm,top=2cm,bottom=2cm]{geometry}
+\usepackage{pifont}
+\usepackage[left=2.5cm,right=2.5cm,top=3cm,bottom=3cm]{geometry}
 \renewcommand{\baselinestretch}{1.3}
 \lstset{
   basicstyle=\small,
@@ -33,20 +34,17 @@
 \tableofcontents
 \newpage
 
-\bibliographystyle{plain}
-\bibliography{biblio}
-
 \section{Introduction et problématique}
 
 Aujourd'hui, on dispose de moyens assez efficaces pour transformer automatiquement un texte prononcé dans un fichier audio en sa transcription écrite (par exemple, l'outil de sous-titrage automatique de Youtube). Le problème avec ces outils est qu'ils nécessitent toujours de savoir en quelle langue le texte est prononcé pour pouvoir le transcrire efficacement.\\
-En effet, pour faire de la reconnaissance de la parole (fig. 1), il est essentiel de connaître le langage à traduire au préalable car il faut pouvoir utiliser les éléments propres à celui-ci.\\
+En effet, pour faire de la reconnaissance de la parole, il est essentiel de connaître le langage à traduire au préalable car il faut pouvoir utiliser les éléments propres à celui-ci.\\
 
 \begin{figure}[h]
   \centerline{\includegraphics[scale=0.6]{img/schema_reco.png}}
   \caption{Schéma d'un système classique de reconnaissance de la parole}
 \end{figure}
 
-\noindent Ici, les éléments qui vont changer d'un langage à l'autre sont les modèles acoustiques, le lexique et les prononciations et le modèle de langage.\cite{jodouin90}\\
+\noindent Ici, les éléments qui vont changer d'un langage à l'autre sont les modèles acoustiques, le lexique et les prononciations et le modèle de langage.\\
  \\
 L'objectif de ce projet d'initiation à la recherche est donc de parvenir à détecter automatiquement la langue parlée dans un fichier audio. Cette détection automatique pourrait permettre de directement transcrire la parole prononcée dans le fichier, en utilisant la "bibliothèque" vocale correspondant à la langue parlée.\\
  \\
@@ -56,12 +54,118 @@ Ensuite, selon les performances du réseau précédent, nous tenterons de créer
 
 \section{Présentation générale}
 
+\subsection{Les réseaux de neurones artificiels}
+
+Les réseaux de neurones artificiels sont des modèles mathématiques qui sont souvent utilisés dans le domaine de l'apprentissage automatique, en tant qu'outils permettant de faire de la reconnaissance de formes et de l'intelligence artificielle. Grâce à des ``couches'' successives (le réseau) d'unités de calcul (les neurones) sont ``excités'' ou non selon leur entrée (ce qui donne un résultat binaire) et ``s'autorégulent'' pour s'approcher du résultat attendu. Si on leur donne un ensemble de données d'apprentissage suffisamment vaste, ces outils peuvent détecter des caractéristiques (comme la langue d'un discours) de manière assez précise.\\
+\\
+L'utilisation d'un réseau de neurones consiste en deux phases : tout d'abord l'apprentissage, où on fournit au réseau un ensemble de données ``étiquetées'' (dans notre cas, des fichiers audio marqués comme étant dans une langue en particulier) de manière à ce que le réseau de neurones puisse déterminer si il a réussi à donner la bonne réponse ou non, et se réguler en conséquence. Une fois que le réseau obtient une marge d'erreur suffisamment basse sur cet ensemble d'apprentissage, on peut l'utiliser pour faire de la détection sur d'autres ensembles de données inconnues, qui ne sont donc pas étiquetées.\\
+\\
+Un neurone (fig. 2) est constitué d'une entrée (composée d'une ou plusieurs valeurs), à laquelle sont assignées des poids. La somme de ces entrées $\times$ poids passe ensuite dans une fonction d'activation qui va la comparer à un certain seuil. Selon le résultat de cette comparaison, la sortie du neurone sera 1 (excité) ou 0.\\
+
+\begin{figure}[h]
+  \centerline{\includegraphics[scale=0.6]{img/neurone.png}}
+  \caption{Représentation d'un neurone}
+\end{figure}
+
+\noindent Un neurone possède donc une sortie binaire qui découle de la formule suivante :
+
+$$o_{j} = \varphi ((\sum_{i=0}^{n}x_{i} \times w_{i}) - \theta _{j}$$
+
+\noindent La sortie dépend de la fonction et du seuil d'activation qui sont fixés, ainsi que des poids qui composent le neurone. Le réseau de neurones ajuste ces poids durant la phase d'apprentissage afin d'améliorer ses résultats, ce sont donc ces poids que le réseau apprend.\\
+ \\
+On dit qu'un réseau de neurones est ``profond'' si il est constitué de plusieurs couches de neurones successives (la sortie d'une couche est l'entrée de la suivante): ces réseaux sont souvent plus efficaces sur des problèmes de reconnaissance complexes car les multiples couches leur permettent "d'affiner" successivement ce qui est reconnu (par exemple, pour de la reconnaissance d'images, une première couche pourrait distinguer plusieurs zones de l'image, une seconde les contours des formes qui apparaissent dans ces zones, etc.)
+
+\begin{figure}[h]
+  \centerline{\includegraphics[scale=0.6]{img/organisation_en_couches_rdn.jpg}}
+  \caption{Schéma d'un réseau de neurones profond}
+\end{figure}
+
+\noindent Le réseau est donc composé de plusieurs couches de neurones qui sont interconnectées.\\  
+
+\subsection{Notre démarche}
+
+L'objectif de ce projet de recherche n'est pas de construire un réseau de neurones par nous-mêmes (nous n'en aurions pas le temps). Pour cette raison, nous allons utiliser une librairie python\footnote{De ce fait, l'intégralité du code que nous allons écrire au cours du projet sera également en python.} qui permet de créer des réseaux de neurones standard de manière très simple et rapide. Notre but sera donc de comprendre comment fonctionne cette librairie, puis de l'utiliser pour construire un (ou plusieurs) réseau qui permettrait de répondre à notre problématique (qui peut donc se résumer par : "Est-il possible d'utiliser un réseau de neurones pour détecter automatiquement la langue d'un contenu audio ?").\\
+Les étapes qui suivent résument les différentes parties de notre travail; elles seront détaillées par la suite.\\
+ \\
+Avant de pouvoir utiliser un réseau de neurones, il est nécessaire de traiter correctement les données dont nous disposons en entrée. Ce prétraitement sera une part importante de notre travail.\\
+ \\
+\begin{itemize}
+  \item Préparation des données (pré-traitement) :
+    \begin{dingautolist}{192}
+    \item Sélection : Nous avons à disposition un corpus de données audio provenant de sources diverses (émissions de radio, conférences...). Comme tout enregistrement audio, ces fichiers contiennent un certain nombre de passages qui ne sont pas de la parole à proprement dit (musique, applaudissements, silences...), et si ces passages sont trop présents ou trop réguliers, cela risque de biaiser les résultats de notre réseau. Dans un premier temps, nous traiterons donc les fichiers audio afin de supprimer de tels passages.
+
+    \item Paramétrisation : Dans le domaine de la reconnaissance de parole, de manière générale, il est plus efficace de travailler non pas directement avec les signaux audio mais plutôt avec certaines caractéristiques spécifiques extraites de ces signaux. Nous effectuerons donc un traitement acoustique afin d'extraire ces caractéristiques, que l'on mettra en entrée du réseau de neurones.
+
+    \item Stockage : Pour stocker ces ensembles de données, nous utiliserons le format de fichier HDF5, qui permet de classer des groupes de données de manière pratique dans un seul fichier et qui offre certaines options qui nous seront utiles.
+    \end{dingautolist}
+    
+\item Création et utilisation du réseau de neurones
+  \begin{dingautolist}{192}
+    \addtocounter{enumi}{3}
+    \item Formatage des données : Selon son type, un réseau de neurones attend en entrée un ensemble de données organisées de manière spécifique. Nous formaterons donc les données précédemment stockées selon le format d'entrée du réseau utilisé.
+
+    \item Apprentissage et tests : Enfin, il nous restera à créer le réseau proprement dit, puis à réaliser la phase d'apprentissage sur les données formatées. Ensuite , nous pourrons réaliser des tests sur des données nouvelles et affiner les paramètres du réseau pour diminuer son taux d'erreur.
+    \end{dingautolist}
+  \end{itemize}
+
+\begin{figure}[h]
+  \centerline{\includegraphics[scale=0.7]{img/schema_complet.png}}
+  \caption{Les différentes étapes de notre travail}
+\end{figure}
+ 
 \section{Prétraitement : préparation des données}
+\hphantom{.}
+\begin{figure}[h]
+  \centerline{\includegraphics[scale=0.9]{img/schema_pretraitement.png}}
+  \caption{Les différentes étapes du prétraitement}
+\end{figure}
+
+L'objectif du prétraitement est donc de transformer les données d'entrée (des ensembles de fichiers audio) en un ensemble de données utilisables par le réseau de neurones (des valeurs réelles), stockées sur le disque dur, pour ne pas avoir à refaire le prétraitement à chaque apprentissage du réseau.\\
+ \\
+ Nous disposons d'un corpus de fichiers de 4 langues différentes (environ une durée totale d'une heure pour chaque) : Arabe, Allemand, Anglais et Français. Les corpus arabe et français sont des extraits d'émissions de radio, le corpus anglais des extraits de conférences, et le corpus allemand des phrases extraites d'un corpus linguistique. En plus des fichiers audio, nous disposons également des fichiers de transcriptions (orthographiques ou phonétiques)\\
+*** TRANSCRIPTION ANNEXE ***\\
+correspondants qui nous sont utiles pour le prétraitement.
+
+\subsection{Sélection des données utilisables}
+
+\newpage
+
+\hphantom{.}
+\begin{figure}[h]
+  \centerline{\includegraphics[scale=0.8]{img/schema_selection.png}}
+  \caption{La sélection}
+\end{figure}
+
+Certains des fichiers audio utilisés peuvent poser problème durant la phase d'apprentissage. En effet, certains commencent ou finissent avec un passage musical ou un silence qui représente une partie non négligeable du fichier. Le problème étant que si un silence ou un passage musical est présent au début ou à la fin dans tous les fichiers audio anglais par exemple, le réseau de neurones risque d'apprendre ce silence ou cette musique comme étant de l'anglais et ainsi de biaiser les résultats sur de futures analyses.\\
+\noindent De tels problèmes sont présents sur différents fichiers du corpus dont nous disposons :
+\begin{itemize}
+    \item les extraits en anglais commencent tous par un morceau musical suivi d'applaudissements ;
+
+    \item les extraits en allemand commencent et se terminent par un silence de durée non négligeable.
+    \end{itemize}
+    
+\noindent Il est donc nécessaire d'enlever ces passages indésirables de manière automatisée. En effet, les retirer à la main aurait demandé beaucoup trop de temps étant donné le grand nombre d'extraits, et il aurait été nécessaire de le refaire pour chaque futur corpus. Pour cela, nous utilisons les transcriptions (orthographiques ou phonétiques) des extraits audio, qui contiennent les temps précis de début et de fin des phrases prononcées.\\
+ \\
+ Nous avons donc écrit un script afin d'extraire les temps de passage de ``vraie parole'' à l'aide des fichiers de transcription. Pour cela, nous coupons le reste de l'audio des fichiers en utilisant le programme Sox \\
+ ***RENVOI VERS SOX***\\(une boîte à outils permettant de faire diverses opérations sur des fichiers audio).
+
+\subsection{Paramétrisation en coefficients acoustiques}
+
+\hphantom{.}
+\begin{figure}[h]
+  \centerline{\includegraphics[scale=0.9]{img/schema_parametrisation.png}}
+  \caption{La paramétrisation}
+\end{figure}
+
+
+
+\subsection{Stockage des données}
 
 \section{Utilisation des réseaux de neurones}
 
 \section{Conclusion}
 
-\printbibliography[title={Whole bibliography}]
+\bibliographystyle{plain}
+\bibliography{biblio}
 
 \end{document}
