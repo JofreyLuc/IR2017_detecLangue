@@ -4,12 +4,35 @@
 \usepackage[french]{babel}
 \usepackage{graphicx}
 \usepackage{pifont}
+\usepackage{xcolor}
 \usepackage[left=2.5cm,right=2.5cm,top=3cm,bottom=3cm]{geometry}
 \renewcommand{\baselinestretch}{1.3}
-\lstset{
-  basicstyle=\small,
-  mathescape
-}
+
+\definecolor{deepblue}{rgb}{0,0,0.5}
+\definecolor{deepred}{rgb}{0.6,0,0}
+\definecolor{deepgreen}{rgb}{0,0.5,0}
+
+% Default fixed font does not support bold face
+\DeclareFixedFont{\ttb}{T1}{txtt}{bx}{n}{12} % for bold
+\DeclareFixedFont{\ttm}{T1}{txtt}{m}{n}{12}  % for normal
+
+\newcommand\pythonstyle{\lstset{
+  language=Python,
+  backgroundcolor=\color{white}, 
+  basicstyle=\ttm\small,
+  %otherkeywords={self},            
+  %keywordstyle=\ttb\color{deepblue},
+  emph={MyClass,__init__},          
+  emphstyle=\ttb\color{deepred},    
+  %stringstyle=\color{deepgreen},
+  commentstyle=\color{red}, 
+  frame=tb,                         
+  showstringspaces=false,
+  inputencoding=utf8,
+  extendedchars=true,
+  literate={é}{{\'e}}1 {î}{{\^i}}1 {ê}{{\^e}}1 {è}{{\`e}}1 {à}{{\`a}}1
+}}
+ 
 \lstset{literate=
   {á}{{\'a}}1 {é}{{\'e}}1 {í}{{\'i}}1 {ó}{{\'o}}1 {ú}{{\'u}}1
   {Á}{{\'A}}1 {É}{{\'E}}1 {Í}{{\'I}}1 {Ó}{{\'O}}1 {Ú}{{\'U}}1
@@ -25,6 +48,7 @@
   {€}{{\euro}}1 {£}{{\pounds}}1 {«}{{\guillemotleft}}1
   {»}{{\guillemotright}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {¿}{{?`}}1
 }
+
 \author{Alexis Lanoix et Jofrey Luc}
 \title{Rapport init recherche}
 \date{02/05/2017}
@@ -33,6 +57,10 @@
 
 \tableofcontents
 \newpage
+
+\newcommand\pythonexternal[2][]{{
+\pythonstyle
+\lstinputlisting[#1]{#2}}}
 
 \section{Introduction et problématique}
 
@@ -148,8 +176,7 @@ Certains des fichiers audio utilisés peuvent poser problème durant la phase d'
     
 \noindent Il est donc nécessaire d'enlever ces passages indésirables de manière automatisée. En effet, les retirer à la main aurait demandé beaucoup trop de temps étant donné le grand nombre d'extraits, et il aurait été nécessaire de le refaire pour chaque futur corpus. Pour cela, nous utilisons les transcriptions (orthographiques ou phonétiques) des extraits audio, qui contiennent les temps précis de début et de fin des phrases prononcées.\\
  \\
- Nous avons donc écrit un script afin d'extraire les temps de passage de ``vraie parole'' à l'aide des fichiers de transcription. Pour cela, nous coupons le reste de l'audio des fichiers en utilisant le programme Sox \\
- ***RENVOI VERS SOX***\\(une boîte à outils permettant de faire diverses opérations sur des fichiers audio).
+ Nous avons donc écrit un script afin d'extraire les temps de passage de ``vraie parole'' à l'aide des fichiers de transcription. Pour cela, nous coupons le reste de l'audio des fichiers en utilisant le programme Sox\cite{docSox} (une boîte à outils permettant de faire diverses opérations sur des fichiers audio).
 
 \subsection{Paramétrisation en coefficients acoustiques}
 
@@ -163,8 +190,7 @@ Certains des fichiers audio utilisés peuvent poser problème durant la phase d'
 Nous pourrions utiliser directement les signaux audio en entrée de notre réseau de neurones : il nous suffirait par exemple de relever la valeur du signal tous les X intervalles de temps et de fournir directement ces valeurs au réseau. Cependant, dans le domaine de la reconnaissance de parole, on utilise plutôt des signaux paramétrisés.
 La paramétrisation d'un signal consiste en l'extraction d'un ensemble spécifique de caractéristiques de ce signal. Actuellement, la paramétrisation la plus utilisée et la plus efficace est celle des coefficients MFCC\cite{haton2006} (Mel-frequency cepstral coefficients). Ils ont entre autres comme avantage d'être peu sensibles à la puissance acoustique du signal. Cela permet d'atténuer le poids de cette caractéristique qui ne présente généralement que peu d'intérêt dans le domaine de la reconnaissance de parole (comme c'est le cas pour notre projet).\\
 \\
-Pour effectuer cette paramétrisation, nous utilisons HTK\\
- ***RENVOI VERS HTK***\\, un logiciel multiplateforme développé par le département d'ingénierie de l'Université de Cambridge, qui est une sorte de ``boîte à outils'' permettant de réaliser toutes sortes de manipulations utiles à la reconnaissance de la parole. Il permet notamment d'effectuer de manière très simple la paramétrisation de fichiers audio en coefficients acoustiques correspondants. Les fichiers ainsi obtenus sont des fichiers .mfcc.
+Pour effectuer cette paramétrisation, nous utilisons HTK\cite{docHTK}, un logiciel multiplateforme développé par le département d'ingénierie de l'Université de Cambridge, qui est une sorte de ``boîte à outils'' permettant de réaliser toutes sortes de manipulations utiles à la reconnaissance de la parole. Il permet notamment d'effectuer de manière très simple la paramétrisation de fichiers audio en coefficients acoustiques correspondants. Les fichiers ainsi obtenus sont des fichiers .mfcc.
  
 \subsection{Stockage des données}
 
@@ -174,7 +200,7 @@ Pour effectuer cette paramétrisation, nous utilisons HTK\\
   \caption{Le stockage des données}
 \end{figure}
 
-Afin de ne pas répéter la phase de prétraitement à chaque apprentissage du réseau de neurones, il est primordial de stocker les données pré-traitées. Pour cela, nous utilisons le format de données HDF5\\ ***RENVOI VERS HDF5***\\ (grâce à la bibliothèque python h5py) qui nous permet de hiérarchiser et d'organiser facilement nos données une fois le prétraitement terminé.\\
+Afin de ne pas répéter la phase de prétraitement à chaque apprentissage du réseau de neurones, il est primordial de stocker les données pré-traitées. Pour cela, nous utilisons le format de données HDF5\cite{docHDF5} (grâce à la bibliothèque python h5py\cite{docH5py}) qui nous permet de hiérarchiser et d'organiser facilement nos données une fois le prétraitement terminé.\\
  \\
  Ce format possède également un autre avantage qui nous est très utile : il permet si nécessaire de transmettre des données en les chargeant directement depuis le disque dur. En effet, pour éviter les régularités dans les fichiers de données qui pourraient biaiser le processus d'apprentissage, les données en entrée du réseau de neurones seront mélangées avant le début de l'apprentissage. Pour ce faire, il est nécessaire de lui fournir l'intégralité des données en une seule fois. De ce fait, la quantité de données générée par la transformation des fichiers audio en coefficients acoustiques peut être trop importante pour pouvoir charger les données directement en mémoire vive selon la taille de départ du corpus. Le format de données HDF5 nous permet donc de parer à ce problème éventuel en chargeant les données directement depuis le disque dur sans surcharger la mémoire vive, même si la vitesse de traitement s'en trouve diminuée.\\
  \\
@@ -192,26 +218,44 @@ Une fois les données mises en bonne forme dans notre fichier HDF5, nous pouvons
 
 \subsection{Keras}
 
-Keras est une librairie open-source Python utilisée pour construire, entraîner et manipuler des réseaux de neurones artificiels, développée par François Chollet dans le cadre du projet de recherche ONEIROS (Open-ended Neuro-Electronic Intelligent Robot Operating System). L'avantage de cette librairie est qu'elle est très haut niveau, elle permet donc de créer des réseaux de neurones très rapidement et très simplement. En effet, cette dernière n'est en quelque sorte qu'une "interface de surcouche" qui se place au-dessus de librairies de réseaux de neurones plus bas niveau comme Theano, qui est la sous-couche que nous utiliserons avec Keras.\\
+Keras\cite{docKeras} est une librairie open-source Python utilisée pour construire, entraîner et manipuler des réseaux de neurones artificiels, développée par François Chollet dans le cadre du projet de recherche ONEIROS (Open-ended Neuro-Electronic Intelligent Robot Operating System). L'avantage de cette librairie est qu'elle est très haut niveau, elle permet donc de créer des réseaux de neurones très rapidement et très simplement. En effet, cette dernière n'est en quelque sorte qu'une "interface de surcouche" qui se place au-dessus de librairies de réseaux de neurones plus bas niveau comme Theano, qui est la sous-couche que nous utiliserons avec Keras.\\
  \\
-Il est possible de créer un réseau de neurones (parfois complexe) avec Keras en littéralement quelques lignes :
+Il est possible de créer un réseau de neurones (parfois complexe) avec Keras en littéralement quelques lignes :\\
 
-\begin{lstlisting}
-model = Sequential()            # création d’un modèle séquentiel
-model.add(Dense(units=64, input_dim=100))    # ajout d’une couche
-model.add(Activation('relu'))            # et de sa fonction d’activation
-
-model.compile(loss='categorical_crossentropy', optimizer='sgd', metrics=['accuracy'])            # permet de configurer différents paramètres de la phase d’apprentissage du réseau
-
-# lance la phase d’apprentissage sur 5 epochs
-model.fit(x_train, y_train, epochs=5, batch_size=32)
-\end{lstlisting}
+\pythonexternal[showstringspaces=false, breaklines=true,breakatwhitespace=true]{exempleReseau.py}
 
 De plus, Keras est très pratique à utiliser en python (les réseaux créés fonctionnant avec des tableaux numpy classiques\footnote{Numpy est une bibliothèque scientifique très utilisée en Python, qui offre notamment la possibilité de réaliser simplement des calculs matriciels.}) et dispose de beaucoup d'options, qui permettent par exemple d'interrompre l'apprentissage dès qu'on le juge nécessaire, de sauvegarder un modèle de réseau, d'optimiser la lecture depuis un fichier HDF5...
 
 \subsection{Définir l'architecture du réseau}
 
+Voir \cite{lecun2015}.
+
+\subsubsection{Généralités sur la création de réseaux de neurones}
+Lorsque on crée un réseau de neurones, il est nécessaire d'en définir la structure. Le premier paramètre de cette structure est le nombre de couches du réseau. Ajouter plus de couches permet d'apprendre des paramètres plus ``précis'' sur les données. Ce qui n'est pas forcément une bonne chose si ces paramètres représentent moins bien la caractéristique des entrées que l'on cherche à déterminer (la langue dans notre cas).\\
+ \\
+Il nous faut aussi déterminer la taille de ces couches (le nombre de neurones qu'elles contiennent). La taille de la couche d'entrée doit être la même que le nombre de valeurs contenues dans un exemple du corpus d'apprentissage, et la taille de la couche de sortie dépend du nombre de langues différentes qu'on souhaite détecter. La taille des couches cachées est quand à elle habituellement comprise entre celle de la couche d'entrée et celle de la couche de sortie; c'est un des paramètres que l'on peut ajuster pour améliorer la performance du réseau.\\
+ \\
+Chacune de ces couches comporte une fonction d'activation (qui sera appliquée à chacun des neurones de la couche). Cette fonction régit la sortie du neurone en comparant la somme des poids à un seuil. Il existe différents types de fonctions d'activation, qui peuvent se comporter de manière différente : on utilise souvent une fonction différente de celle des autres couches pour la couche de sortie, par exemple.\\
+ \\
+Enfin, il existe différents types de réseaux de neurones, qui ont un fonctionnement interne différent.  Pour ce projet, nous en avons considéré deux : un perceptron multi-couches et un réseau LSTM (Long Short-Term Memory).
+ 
+\subsubsection{Perceptron multi-couches}
+
+Le perceptron multi-couches est un des modèles de réseau les plus simples à mettre en œuvre mais qui peut donner de très bons résultats. C'est historiquement un des tout premiers modèles d'apprentissage supervisé. Il est ``simplement'' constitué de plusieurs couches de neurones, la sortie des neurones d'une couche constituant l'entrée des neurones de la couche suivante.\\
+ \\
+Pour ce perceptron multi-couches, nous utilisons deux couches de taille (nombre de valeurs dans un vecteur acoustique * nombre de vecteurs dans une trame) dont la couche d'entrée, pour avoir effectivement un neurone par valeur réelle, et une couche de sortie de taille 4, puisque nous avons 4 langages possibles différents. Entre les deux, nous avons deux couches cachées, dont nous avons fixé la taille à 256 (suivant les instructions de nos encadrants).\\
+La fonction d'activation des couches d'entrée et des couches cachées est une fonction ReLU (Rectified Linear Unit) : il s'agit plus ou moins de la fonction la plus efficace, de manière générale, pour le moment pour cette application précise. 
+*** Fonction ReLU (RHA DES MATHS) ***
+La fonction d'activation de la couche de sortie est une fonction softmax : c'est à dire que, pour chaque entrée, le réseau générera 4 probabilités dont la somme est égale à 1 : la probabilité que l'entrée soit du français, la probabilité que l'entrée soit de l'allemand... et donnera en sortie la langue dont la probabilité est la plus élevée.
+*** Code commenté de la création du perceptron ***
+
+\subsubsection{Réseau LSTM (Long Short-Term Memory)}
+
 \subsection{Apprendre les paramètres du réseau sur le corpus d'apprentissage}
+
+\subsubsection{Généralités sur les mécanismes d'apprentissage}
+\subsubsection{Formatage des données pour le perceptron multi-couches}
+\subsubsection{Résultat de l'apprentissage sur le perceptron multi-couches}
 
 \subsection{Utiliser le réseau pour étiqueter le corpus de test}
 
