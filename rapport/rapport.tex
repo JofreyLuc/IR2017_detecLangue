@@ -84,7 +84,7 @@ Ensuite, selon les performances du réseau précédent, nous tenterons de créer
 
 \subsection{Les réseaux de neurones artificiels}
 
-Voir \cite{joulion90}, \cite{lecun2015}.
+\textit{Voir \cite{jodouin90}, \cite{lecun2015}.}\\
 
 Les réseaux de neurones artificiels sont des modèles mathématiques qui sont souvent utilisés dans le domaine de l'apprentissage automatique, en tant qu'outils permettant de faire de la reconnaissance de formes et de l'intelligence artificielle. Grâce à des ``couches'' successives (le réseau) d'unités de calcul (les neurones) sont ``excités'' ou non selon leur entrée (ce qui donne un résultat binaire) et ``s'autorégulent'' pour s'approcher du résultat attendu. Si on leur donne un ensemble de données d'apprentissage suffisamment vaste, ces outils peuvent détecter des caractéristiques (comme la langue d'un discours) de manière assez précise.\\
 \\
@@ -228,7 +228,7 @@ De plus, Keras est très pratique à utiliser en python (les réseaux créés fo
 
 \subsection{Définir l'architecture du réseau}
 
-Voir \cite{lecun2015}.
+\textit{Voir \cite{lecun2015}.}
 
 \subsubsection{Généralités sur la création de réseaux de neurones}
 Lorsque on crée un réseau de neurones, il est nécessaire d'en définir la structure. Le premier paramètre de cette structure est le nombre de couches du réseau. Ajouter plus de couches permet d'apprendre des paramètres plus ``précis'' sur les données. Ce qui n'est pas forcément une bonne chose si ces paramètres représentent moins bien la caractéristique des entrées que l'on cherche à déterminer (la langue dans notre cas).\\
@@ -281,8 +281,8 @@ Pour faire l'apprentissage proprement dit, le réseau va procéder de la manièr
 Pour améliorer les capacités d'apprentissage de notre réseau, nous utilisons une méthode classique d'apprentissage automatique qui consiste à séparer nos données d'apprentissage en 2 corpus distincts : 
 
 \begin{itemize}
-\item un corpus d'apprentissage (appelé train), qu'on va envoyer en entrée du réseau de neurones et qui sera directement ``appris'',
-\item et un corpus de validation (appelé dev), sur lequel le réseau va tester ses capacités après chaque epoch, et utiliser les résultats de ce test pour améliorer l'apprentissage sur le corpus de base.
+\item un corpus d'apprentissage (appelé \textit{train}), qu'on va envoyer en entrée du réseau de neurones et qui servira ``directement'' à l'apprentissage des poids,
+\item et un corpus de validation (appelé \textit{dev}), sur lequel le réseau va tester ses capacités après chaque epoch, et utiliser les résultats de ce test pour améliorer l'apprentissage sur le corpus de base.
 \end{itemize}
 
 \noindent inalement, si l'apprentissage se déroule conformément à ce qu'on attendait, on utilise le corpus de test pour évaluer les performances de notre modèle sur des données qu'il n'a jamais vues.
@@ -315,7 +315,10 @@ Les résultats des tests du perceptron multi-couches sur un ensemble de fichiers
 
 \section{Conclusion}
 
-\bibliographystyle{plain}
+- Ce projet nous a fait découvrir les RdN et c'était cool\\
+- C'est dommage que le perceptron ne fonctionne pas
+
+\bibliographystyle{unsrt}
 \bibliography{biblio}
 
 \end{document}
