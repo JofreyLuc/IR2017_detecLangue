@@ -244,23 +244,75 @@ Enfin, il existe différents types de réseaux de neurones, qui ont un fonctionn
 
 Le perceptron multi-couches est un des modèles de réseau les plus simples à mettre en œuvre mais qui peut donner de très bons résultats. C'est historiquement un des tout premiers modèles d'apprentissage supervisé. Il est ``simplement'' constitué de plusieurs couches de neurones, la sortie des neurones d'une couche constituant l'entrée des neurones de la couche suivante.\\
  \\
-Pour ce perceptron multi-couches, nous utilisons deux couches de taille (nombre de valeurs dans un vecteur acoustique * nombre de vecteurs dans une trame) dont la couche d'entrée, pour avoir effectivement un neurone par valeur réelle, et une couche de sortie de taille 4, puisque nous avons 4 langages possibles différents. Entre les deux, nous avons deux couches cachées, dont nous avons fixé la taille à 256 (suivant les instructions de nos encadrants).\\
-La fonction d'activation des couches d'entrée et des couches cachées est une fonction ReLU (Rectified Linear Unit) : il s'agit plus ou moins de la fonction la plus efficace, de manière générale, pour le moment pour cette application précise. 
-*** Fonction ReLU (RHA DES MATHS) ***
-La fonction d'activation de la couche de sortie est une fonction softmax : c'est à dire que, pour chaque entrée, le réseau générera 4 probabilités dont la somme est égale à 1 : la probabilité que l'entrée soit du français, la probabilité que l'entrée soit de l'allemand... et donnera en sortie la langue dont la probabilité est la plus élevée.
+Pour ce perceptron multi-couches, nous utilisons deux couches de taille (nombre de valeurs dans un vecteur acoustique $\times$ nombre de vecteurs dans une trame) dont la couche d'entrée, pour avoir effectivement un neurone par valeur réelle, et une couche de sortie de taille 4, puisque nous avons 4 langages possibles différents. Entre les deux, nous avons deux couches cachées, dont nous avons fixé la taille à 256 (suivant les instructions de nos encadrants).\\
+La fonction d'activation des couches d'entrée et des couches cachées est une fonction ReLU (Rectified Linear Unit) : il s'agit plus ou moins de la fonction la plus efficace, de manière générale, pour le moment pour cette application précise. Elle peut être approximée par :
+$$ f(x) = ln(1 + e^{x}) $$
+La fonction d'activation de la couche de sortie est une fonction softmax : c'est à dire que, pour chaque entrée, le réseau générera 4 probabilités dont la somme est égale à 1 : la probabilité que l'entrée soit du français, la probabilité que l'entrée soit de l'allemand... et donnera en sortie la langue dont la probabilité est la plus élevée.\\
+
 *** Code commenté de la création du perceptron ***
 
 \subsubsection{Réseau LSTM (Long Short-Term Memory)}
 
+Les réseaux LSTM sont des réseaux récurrents. Le principe d'un réseau récurrent est de se ``souvenir'' des résultats de l'apprentissage de données précédentes pour essayer d'améliorer sa performance sur les données actuelles :autrement dit, en utilisant les résultats des prédictions sur les données précédentes lors de l'évaluation des données actuelles, on utilise un contexte qui peut aider à prendre une décision.\\
+ \\
+Le nombre de couches, les fonctions d'activation et la taile des couches cachées et de sortie de ce réseau sont les mêmes que celles du perceptron multi-couches. La taille de la couche d'entrée va différer : en effet, pour pouvoir fournir un contexte pertinent lors de l'évaluation suivante, on a besoin de retenir plus qu'une seule trame de données. On ne va donc plus fournir en entrée du réseau une seule trame mais un ensemble de trames (de taille fixe); le résultat de l'évaluation d'un ensemble de trames aura donc de l'influence sur l'évaluation de l'ensemble de trames suivant.\\
+ \\
+Néanmoins, par manque de temps lors de la fin du projet, nous n'avons pas pu implémenter ce type de réseau.
+
 \subsection{Apprendre les paramètres du réseau sur le corpus d'apprentissage}
 
 \subsubsection{Généralités sur les mécanismes d'apprentissage}
+
+Pour faire l'apprentissage proprement dit, le réseau va procéder de la manière suivante :
+\begin{itemize}
+  \item Prendre une certaine quantité (fixe) X de données parmi l'ensemble d'apprentissage qu'il a reçu, de manière aléatoire,
+  \item Passer ces données X à travers les différentes couches du réseau,
+  \item Obtenir le résultat de la prédiction à la couche de sortie, puis le comparer à l'étiquette de X et réajuster les différentes couches par rapport à ce résultat,
+  \item Répéter jusqu'à avoir traité toutes les données de l'ensemble d'apprentissage.
+\end{itemize}
+
+\hphantom{.}
+\begin{figure}[h]
+  \centerline{\includegraphics[scale=0.6]{img/schema_epoch.png}}
+  \caption{Représentation d'une epoch d'apprentissage}
+\end{figure}
+
+\noindent Ce traitement de toutes les données du corpus d'apprentissage s'appelle une epoch. On effectue généralement plusieurs epochs pour un apprentissage (pour nous, environ une centaine), les performances du réseau étant censées s'améliorer au fil des epochs. \\
+ \\
+Pour améliorer les capacités d'apprentissage de notre réseau, nous utilisons une méthode classique d'apprentissage automatique qui consiste à séparer nos données d'apprentissage en 2 corpus distincts : 
+
+\begin{itemize}
+\item un corpus d'apprentissage (appelé train), qu'on va envoyer en entrée du réseau de neurones et qui sera directement ``appris'',
+\item et un corpus de validation (appelé dev), sur lequel le réseau va tester ses capacités après chaque epoch, et utiliser les résultats de ce test pour améliorer l'apprentissage sur le corpus de base.
+\end{itemize}
+
+\noindent inalement, si l'apprentissage se déroule conformément à ce qu'on attendait, on utilise le corpus de test pour évaluer les performances de notre modèle sur des données qu'il n'a jamais vues.
+\newpage
 \subsubsection{Formatage des données pour le perceptron multi-couches}
+
+En entrée du réseau, nous ne pouvons pas simplement mettre un seul vecteur acoustique à la fois : en effet, cela n'a pas vraiment de sens d'essayer d'en prédire la langue puisqu'il correspond à une durée de parole très courte, de quelques millisecondes seulement. Pour cette raison, nous passons en entrée un ensemble de ces vecteurs, que l'on appelle une trame, et dont la durée de parole combinée correspondant aux vecteurs qui la compose fait plutôt quelques dizaines de millisecondes, ce qui peut permettre de plutôt travailler sur des syllabes ou des mots courts. Le nombre de vecteurs composant cette trame est donc un des paramètres de notre réseau.\\
+ \\
+De plus, afin d'être sûrs de repérer tous les ``traits'' de caractère possibles d'un langage, nous utilisons une fenêtre glissante (fig. 11) : plutôt que de séparer un fichier d'entrée en le découpant en X trames successives, nous ``décalons'' chaque trame successive d'un certain nombre de vecteurs; ainsi, nous obtenons un ensemble de trames où les $n$ premiers vecteurs de l'une sont les $n$ derniers vecteurs de la précédente. Ce décalage est donc aussi un paramètre de notre réseau.
+
+\hphantom{.}
+\begin{figure}[h]
+  \centerline{\includegraphics[scale=0.8]{img/schema_decoupage_trame.png}}
+  \caption{Découpage des données en trames}
+\end{figure}
+
 \subsubsection{Résultat de l'apprentissage sur le perceptron multi-couches}
+
+Le premier apprentissage que nous avons effectué sur le perceptron s'est révélé infructueux. En effet, le réseau apprenait correctement sur le corpus d'apprentissage et s'améliorait linéairement au fur et à mesure mais ne s'améliorait pas sur le corpus de validation et stagnait aux alentours de 50\% de précision, ce qui semblait indiquer que le réseau n'apprenait rien d'assez général qui puisse l'aider à s'améliorer sur le corpus de validation.\\
+ \\
+Nous avons ensuite effectué d'autres apprentissages en faisant varier les différents paramètres (taille des trames d'entrée, décalage), notamment en augmentant la taille des trames d'entrée de manière significative sur certains essais en partant de la supposition que la taille des trames était peut-être insuffisante pour apporter de l'information pertinente au réseau.\\
+\noindent Nous avons également essayé de normaliser les données en mettant la variance de chaque composante des vecteurs acoustiques à 1 pour les corpus d'apprentissage et de validation).\\
+\noindent Tous les essais sur le perceptron ont cependant conduit au même résultat que précédemment : aucune amélioration sur le corpus de validation pendant la phase d'apprentissage.
 
 \subsection{Utiliser le réseau pour étiqueter le corpus de test}
 
-
+Une fois que le réseau est créé et entraîné, nous pouvons l'utiliser pour prédire la langue de fichiers audio qui ne sont pas étiquetés. Pour ce faire, nous appliquons aux fichiers de test le même traitement qu'aux fichiers d'apprentissage : paramétrisation en coefficients acoustiques, stockage dans un fichier HDF5, etc. Mais, à la différence des données d'apprentissage, ces données là ne sont pas étiquetées : on ne fournit pas au réseau la langue parlée. Il suffit ensuite simplement de mettre ces données en entrée du réseau de neurones et d'observer l'état de la couche de sortie pour savoir quelle langue a prédit notre réseau pour ce fichier.\\
+ \\
+Les résultats des tests du perceptron multi-couches sur un ensemble de fichiers de test nous ont confirmé que le réseau n'est effectivement pas efficace : il ne parvient à prédire correctement que peu de fichiers, et se comporte de manière étrange sur certains passages. La raison de cette inefficacité est probablement qu'un réseau aussi simple n'est pas assez puissant pour détecter suffisement des paramètres pour pouvoir classifier correctement les langues.\\ *** Renvoi en annexe à des résultats de tests expliqués ***\\
 
 \section{Conclusion}
 
