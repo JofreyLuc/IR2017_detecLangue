@@ -121,6 +121,7 @@ Pour ce faire, on utilisera des méthodes d'apprentissage automatique (machine l
 Dans un premier temps, le but sera de construire un réseau de neurones capable de déterminer, pour un fichier de parole homogène (même langue dans le fichier) donné en entrée, s'il s'agit de parole  allemande, anglaise, arabe ou française.\\
 Ensuite, selon les performances du réseau précédent, nous tenterons de créer un système capable de détecter la langue d'un contenu audio de manière dynamique. Ainsi, nous pourrions repérer automatiquement, par exemple, une citation prononcée en anglais dans un flux de parole globalement allemande, pour pouvoir ainsi faciliter la transcription automatique d'un tel texte.
 
+\newpage
 \section{Présentation générale}
 
 \subsection{Les réseaux de neurones artificiels}
@@ -183,11 +184,12 @@ Avant de pouvoir utiliser un réseau de neurones, il est nécessaire de traiter 
   \centerline{\includegraphics[scale=0.7]{img/schema_complet.png}}
   \caption{Les différentes étapes de notre travail}
 \end{figure}
- 
+
+\newpage
 \section{Prétraitement : préparation des données}
 \hphantom{.}
 \begin{figure}[h]
-  \centerline{\includegraphics[scale=0.9]{img/schema_pretraitement.png}}
+  \centerline{\includegraphics[scale=0.8]{img/schema_pretraitement.png}}
   \caption{Les différentes étapes du prétraitement}
 \end{figure}
 
@@ -197,11 +199,9 @@ L'objectif du prétraitement est donc de transformer les données d'entrée (des
 
 \subsection{Sélection des données utilisables}
 
-\newpage
-
 \hphantom{.}
 \begin{figure}[h]
-  \centerline{\includegraphics[scale=0.8]{img/schema_selection.png}}
+  \centerline{\includegraphics[scale=0.7]{img/schema_selection.png}}
   \caption{La sélection}
 \end{figure}
 
@@ -221,10 +221,9 @@ Certains des fichiers audio utilisés peuvent poser problème durant la phase d'
 
 \hphantom{.}
 \begin{figure}[h]
-  \centerline{\includegraphics[scale=0.9]{img/schema_parametrisation.png}}
+  \centerline{\includegraphics[scale=0.8]{img/schema_parametrisation.png}}
   \caption{La paramétrisation}
 \end{figure}
-\newpage
 
 Nous pourrions utiliser directement les signaux audio en entrée de notre réseau de neurones : il nous suffirait par exemple de relever la valeur du signal tous les X intervalles de temps et de fournir directement ces valeurs au réseau. Cependant, dans le domaine de la reconnaissance de parole, on utilise plutôt des signaux paramétrisés.
 La paramétrisation d'un signal consiste en l'extraction d'un ensemble spécifique de caractéristiques de ce signal. Actuellement, la paramétrisation la plus utilisée et la plus efficace est celle des coefficients MFCC\cite{haton2006} (Mel-frequency cepstral coefficients). Ils ont entre autres comme avantage d'être peu sensibles à la puissance acoustique du signal. Cela permet d'atténuer le poids de cette caractéristique qui ne présente généralement que peu d'intérêt dans le domaine de la reconnaissance de parole (comme c'est le cas pour notre projet).\\
@@ -235,7 +234,7 @@ Pour effectuer cette paramétrisation, nous utilisons HTK\cite{docHTK}, un logic
 
 \hphantom{.}
 \begin{figure}[h]
-  \centerline{\includegraphics[scale=0.9]{img/schema_stockage.png}}
+  \centerline{\includegraphics[scale=0.8]{img/schema_stockage.png}}
   \caption{Le stockage des données}
 \end{figure}
 
@@ -244,7 +243,7 @@ Afin de ne pas répéter la phase de prétraitement à chaque apprentissage du r
  Ce format possède également un autre avantage qui nous est très utile : il permet si nécessaire de transmettre des données en les chargeant directement depuis le disque dur. En effet, pour éviter les régularités dans les fichiers de données qui pourraient biaiser le processus d'apprentissage, les données en entrée du réseau de neurones seront mélangées avant le début de l'apprentissage. Pour ce faire, il est nécessaire de lui fournir l'intégralité des données en une seule fois. De ce fait, la quantité de données générée par la transformation des fichiers audio en coefficients acoustiques peut être trop importante pour pouvoir charger les données directement en mémoire vive selon la taille de départ du corpus. Le format de données HDF5 nous permet donc de parer à ce problème éventuel en chargeant les données directement depuis le disque dur sans surcharger la mémoire vive, même si la vitesse de traitement s'en trouve diminuée.\\
  \\
 Au final, la taille des données ne nous a pas posé de problème, étant suffisamment petite pour être chargée en mémoire. Néanmoins, nous avons quand même écrit une fonction qui utilise cette caractéristique du format HDF5, qui pourrait être utile dans le futur, si on a un jour besoin de traiter plus de données.
-
+\newpage
 \section{Utilisation des réseaux de neurones}
 
 \hphantom{.}
@@ -327,7 +326,7 @@ Pour améliorer les capacités d'apprentissage de notre réseau, nous utilisons 
 \end{itemize}
 
 \noindent Finalement, si l'apprentissage se déroule conformément à ce qu'on attendait, on utilise le corpus de test pour évaluer les performances de notre modèle sur des données qu'il n'a jamais vues.
-\newpage
+
 \subsubsection{Formatage des données pour le perceptron multi-couches}
 
 En entrée du réseau, nous ne pouvons pas simplement mettre un seul vecteur acoustique à la fois : en effet, cela n'a pas vraiment de sens d'essayer d'en prédire la langue puisqu'il correspond à une durée de parole très courte, de quelques millisecondes seulement. Pour cette raison, nous passons en entrée un ensemble de ces vecteurs, que l'on appelle une trame, et dont la durée de parole combinée correspondant aux vecteurs qui la compose est plutôt de quelques dizaines de millisecondes, ce qui permet de travailler sur des syllabes ou des mots courts. Le nombre de vecteurs composant cette trame est donc un des paramètres de notre réseau.\\
@@ -336,7 +335,7 @@ De plus, afin d'être sûrs de repérer tous les ``traits'' de caractère possib
 
 \hphantom{.}
 \begin{figure}[h]
-  \centerline{\includegraphics[scale=0.8]{img/schema_decoupage_trame.png}}
+  \centerline{\includegraphics[scale=0.7]{img/schema_decoupage_trame.png}}
   \caption{Découpage des données en trames}
 \end{figure}
 
@@ -359,16 +358,21 @@ Nous avons ensuite effectué d'autres apprentissages en faisant varier les diff�
 Une fois que le réseau est créé et entraîné, nous pouvons l'utiliser pour prédire la langue de fichiers audio qui ne sont pas étiquetés. Pour ce faire, nous appliquons aux fichiers de test le même traitement qu'aux fichiers d'apprentissage : paramétrisation en coefficients acoustiques, stockage dans un fichier HDF5, etc. Mais, à la différence des données d'apprentissage, ces données là ne sont pas étiquetées : on ne fournit pas au réseau la langue parlée. Il suffit ensuite simplement de mettre ces données en entrée du réseau de neurones et d'observer l'état de la couche de sortie pour savoir quelle langue a prédit notre réseau pour ce fichier.\\
  \\
 Les résultats des tests (Annexe [D]) du perceptron multi-couches sur un ensemble de fichiers de test nous ont confirmé que le réseau n'est effectivement pas efficace : il ne parvient à prédire correctement que peu de fichiers, et se comporte de manière étrange sur certains passages. La raison de cette inefficacité est probablement qu'un réseau aussi simple n'est pas assez puissant pour détecter suffisamment des paramètres pour pouvoir classifier correctement les langues.\\
-
+\newpage
 \section{Conclusion}
 
-- Ce projet nous a fait découvrir les RdN et c'était cool\\
-- C'est dommage que le perceptron ne fonctionne pas
+Bien que nous n'ayons pas obtenu de résultats concluants, ce projet nous a tout de même permis de découvrir comment fonctionnent les réseaux de neurones, ainsi que beaucoup d'autres notions abordées dans le domaine de la reconnaissance de parole. Nous avons également pu constater que dans le domaine de la recherche, on n'arrive pas toujours aux résultats escomptés du premier coup.\\
+Même si nous n'avons pas eu le temps d'implémenter le réseau LSTM, nous sommes tout de même satisfaits d'avoir pu faire fonctionner le perceptron multi-couches bien qu'il ne donne pas de résultats probants.\\
+ \\
+Nous avons l'intention, dans les prochaines semaines, d'apporter quelques améliorations au code que nous avons écrit étant donné qu'il sera utilisé par la suite par nos enseignants référents.\\
+ \\
+Nous remercions nos enseignants référents, Odile Mella et Dominique Fohr. 
 
 \newpage
 
 \bibliographystyle{unsrt}
 \bibliography{biblio}
+\thispagestyle{empty}
 
 \newpage
 
