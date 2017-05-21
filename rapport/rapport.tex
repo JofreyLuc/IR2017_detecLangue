@@ -193,9 +193,7 @@ Avant de pouvoir utiliser un réseau de neurones, il est nécessaire de traiter 
 
 L'objectif du prétraitement est donc de transformer les données d'entrée (des ensembles de fichiers audio) en un ensemble de données utilisables par le réseau de neurones (des valeurs réelles), stockées sur le disque dur, pour ne pas avoir à refaire le prétraitement à chaque apprentissage du réseau.\\
  \\
- Nous disposons d'un corpus de fichiers de 4 langues différentes (environ une durée totale d'une heure pour chaque) : Arabe, Allemand, Anglais et Français. Les corpus arabe et français sont des extraits d'émissions de radio, le corpus anglais des extraits de conférences, et le corpus allemand des phrases extraites d'un corpus linguistique. En plus des fichiers audio, nous disposons également des fichiers de transcriptions (orthographiques ou phonétiques)\\
-*** TRANSCRIPTION ANNEXE ***\\
-correspondants qui nous sont utiles pour le prétraitement.
+ Nous disposons d'un corpus de fichiers de 4 langues différentes (environ une durée totale d'une heure pour chaque) : Arabe, Allemand, Anglais et Français. Les corpus arabe et français sont des extraits d'émissions de radio, le corpus anglais des extraits de conférences, et le corpus allemand des phrases extraites d'un corpus linguistique. En plus des fichiers audio, nous disposons également des fichiers de transcriptions (orthographiques ou phonétiques, voir Annexe [A]) correspondants qui nous sont utiles pour le prétraitement.
 
 \subsection{Sélection des données utilisables}
 
@@ -285,7 +283,7 @@ Enfin, il existe différents types de réseaux de neurones, qui ont un fonctionn
 Le perceptron multi-couches est un des modèles de réseau les plus simples à mettre en œuvre mais qui peut donner de très bons résultats. C'est historiquement un des tout premiers modèles d'apprentissage supervisé. Il est ``simplement'' constitué de plusieurs couches de neurones, la sortie des neurones d'une couche constituant l'entrée des neurones de la couche suivante.\\
  \\
 Pour ce perceptron multi-couches, nous utilisons deux couches de taille (nombre de valeurs dans un vecteur acoustique $\times$ nombre de vecteurs dans une trame) dont la couche d'entrée, pour avoir effectivement un neurone par valeur réelle, et une couche de sortie de taille 4, puisque nous avons 4 langages possibles différents. Entre les deux, nous avons deux couches cachées, dont nous avons fixé la taille à 256 (suivant les instructions de nos encadrants).\\
-La fonction d'activation des couches d'entrée et des couches cachées est une fonction ReLU (Rectified Linear Unit) : il s'agit plus ou moins de la fonction la plus efficace, de manière générale, pour le moment pour cette application précise. Elle peut être approximée par :
+La fonction d'activation des couches d'entrée et des couches cachées est une fonction ReLU (Rectified Linear Unit) : il s'agit plus ou moins de la fonction la plus efficace, de manière générale, pour cette application précise. Elle peut être approximée par :
 $$ f(x) = ln(1 + e^{x}) $$
 La fonction d'activation de la couche de sortie est une fonction softmax : c'est à dire que, pour chaque entrée, le réseau générera 4 probabilités dont la somme est égale à 1 : la probabilité que l'entrée soit du français, la probabilité que l'entrée soit de l'allemand... et donnera en sortie la langue dont la probabilité est la plus élevée.\\
  \\
@@ -354,7 +352,7 @@ Nous avons ensuite effectué d'autres apprentissages en faisant varier les diff�
 
 Une fois que le réseau est créé et entraîné, nous pouvons l'utiliser pour prédire la langue de fichiers audio qui ne sont pas étiquetés. Pour ce faire, nous appliquons aux fichiers de test le même traitement qu'aux fichiers d'apprentissage : paramétrisation en coefficients acoustiques, stockage dans un fichier HDF5, etc. Mais, à la différence des données d'apprentissage, ces données là ne sont pas étiquetées : on ne fournit pas au réseau la langue parlée. Il suffit ensuite simplement de mettre ces données en entrée du réseau de neurones et d'observer l'état de la couche de sortie pour savoir quelle langue a prédit notre réseau pour ce fichier.\\
  \\
-Les résultats des tests du perceptron multi-couches sur un ensemble de fichiers de test nous ont confirmé que le réseau n'est effectivement pas efficace : il ne parvient à prédire correctement que peu de fichiers, et se comporte de manière étrange sur certains passages. La raison de cette inefficacité est probablement qu'un réseau aussi simple n'est pas assez puissant pour détecter suffisement des paramètres pour pouvoir classifier correctement les langues.\\ *** Renvoi en annexe à des résultats de tests expliqués ***\\
+Les résultats des tests (Annexe [D]) du perceptron multi-couches sur un ensemble de fichiers de test nous ont confirmé que le réseau n'est effectivement pas efficace : il ne parvient à prédire correctement que peu de fichiers, et se comporte de manière étrange sur certains passages. La raison de cette inefficacité est probablement qu'un réseau aussi simple n'est pas assez puissant pour détecter suffisement des paramètres pour pouvoir classifier correctement les langues.\\
 
 \section{Conclusion}
 
@@ -430,6 +428,10 @@ BrunoBowden_2008 1 BrunoBowden_2008 30.74 38.23 <o,f0,male> doing some improvisa
 \subsection*{C : Code principal de lancement de Keras} 
 
 \pythonexternal[showstringspaces=false, breaklines=true,breakatwhitespace=true, frame=single, numbers=left]{kerasAdapte.py}
+
+\newpage
+
+\subsection*{D : Résultats des tests} 
 
 
 \end{document}
