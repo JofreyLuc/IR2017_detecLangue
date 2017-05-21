@@ -7,6 +7,8 @@
 \usepackage{xcolor}
 \usepackage[left=2.5cm,right=2.5cm,top=3cm,bottom=3cm]{geometry}
 \usepackage{setspace}
+\usepackage{verbatim}
+\usepackage{spverbatim}
 
 \definecolor{deepblue}{rgb}{0,0,0.5}
 \definecolor{deepred}{rgb}{0.6,0,0}
@@ -48,6 +50,7 @@
   {€}{{\euro}}1 {£}{{\pounds}}1 {«}{{\guillemotleft}}1
   {»}{{\guillemotright}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {¿}{{?`}}1
 }
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 
 \author{Alexis Lanoix et Jofrey Luc}
 \title{Rapport init recherche}
@@ -55,7 +58,41 @@
 
 \begin{document}
 
+
+\begin{titlepage}
+  \begin{sffamily}
+  \begin{center}
+
+    \includegraphics[scale=2]{img/univLorraine.png}~\\[1.5cm]
+
+    \textsc{\LARGE Université de Lorraine}\\[2cm]
+
+    \textsc{\Large Projet d'initiation à la Recherche}\\[1.5cm]
+
+    \HRule \\[0.4cm]
+    { \huge \bfseries Multispeech : Reconnaissance de la langue dans un flux audio\\[0.4cm] }
+
+    \HRule \\[2cm]
+
+    \textit{\large Auteurs} :\\[0.4cm]
+    {\Large Alexis Lanoix \& Jofrey Luc}\\[1.2cm]
+    
+    \textit{\large Enseignants référents :}\\[0.4cm]
+    {\Large Odile Mella \& Dominique Fohr}\\
+    
+
+    \vfill
+
+    {\large 2017}
+
+  \end{center}
+  \end{sffamily}
+\end{titlepage}
+
+
 \setstretch{1.3} 
+
+\thispagestyle{empty}
 
 \tableofcontents
 \newpage
@@ -63,6 +100,8 @@
 \newcommand\pythonexternal[2][]{{
 \pythonstyle
 \lstinputlisting[#1]{#2}}}
+
+\setcounter{page}{1}
 
 \section{Introduction et problématique}
 
@@ -154,9 +193,7 @@ Avant de pouvoir utiliser un réseau de neurones, il est nécessaire de traiter 
 
 L'objectif du prétraitement est donc de transformer les données d'entrée (des ensembles de fichiers audio) en un ensemble de données utilisables par le réseau de neurones (des valeurs réelles), stockées sur le disque dur, pour ne pas avoir à refaire le prétraitement à chaque apprentissage du réseau.\\
  \\
- Nous disposons d'un corpus de fichiers de 4 langues différentes (environ une durée totale d'une heure pour chaque) : Arabe, Allemand, Anglais et Français. Les corpus arabe et français sont des extraits d'émissions de radio, le corpus anglais des extraits de conférences, et le corpus allemand des phrases extraites d'un corpus linguistique. En plus des fichiers audio, nous disposons également des fichiers de transcriptions (orthographiques ou phonétiques)\\
-*** TRANSCRIPTION ANNEXE ***\\
-correspondants qui nous sont utiles pour le prétraitement.
+ Nous disposons d'un corpus de fichiers de 4 langues différentes (environ une durée totale d'une heure pour chaque) : Arabe, Allemand, Anglais et Français. Les corpus arabe et français sont des extraits d'émissions de radio, le corpus anglais des extraits de conférences, et le corpus allemand des phrases extraites d'un corpus linguistique. En plus des fichiers audio, nous disposons également des fichiers de transcriptions (orthographiques ou phonétiques, voir Annexe [A]) correspondants qui nous sont utiles pour le prétraitement.
 
 \subsection{Sélection des données utilisables}
 
@@ -220,7 +257,7 @@ Une fois les données correctement mises en forme dans notre fichier HDF5, nous 
 
 \subsection{Keras}
 
-Keras\cite{docKeras} est une librairie open-source Python utilisée pour construire, entraîner et manipuler des réseaux de neurones artificiels, développée par François Chollet dans le cadre du projet de recherche ONEIROS (Open-ended Neuro-Electronic Intelligent Robot Operating System). L'avantage de cette librairie est qu'elle est très haut niveau, elle permet donc de créer des réseaux de neurones très rapidement et très simplement. En effet, cette dernière n'est en quelque sorte qu'une "interface de surcouche" qui se place au-dessus de librairies de réseaux de neurones plus bas niveau comme Theano, qui est la sous-couche que nous utiliserons avec Keras.\\
+Keras\cite{docKeras} est une librairie open-source Python utilisée pour construire, entraîner et manipuler des réseaux de neurones artificiels, développée par François Chollet dans le cadre du projet de recherche ONEIROS (Open-ended Neuro-Electronic Intelligent Robot Operating System). L'avantage de cette librairie est qu'elle est très haut niveau, elle permet donc de créer des réseaux de neurones très rapidement et très simplement. En effet, cette dernière n'est en quelque sorte qu'une "interface de surcouche" qui se place au-dessus de librairies de réseaux de neurones plus bas niveau (comme par exemple Theano\cite{docTheano}, qui est la sous-couche que nous utiliserons avec Keras).\\
  \\
 Il est possible de créer un réseau de neurones (parfois complexe) avec Keras en littéralement quelques lignes :\\
 
@@ -248,9 +285,11 @@ Le perceptron multi-couches est un des modèles de réseau les plus simples à m
 Pour ce perceptron multi-couches, nous utilisons deux couches de taille (nombre de valeurs dans un vecteur acoustique $\times$ nombre de vecteurs dans une trame) dont la couche d'entrée, pour avoir effectivement un neurone par valeur réelle, et une couche de sortie de taille 4, puisque nous avons 4 langages possibles différents. Entre les deux, nous avons deux couches cachées, dont nous avons fixé la taille à 256 (suivant les instructions de nos encadrants).\\
 La fonction d'activation des couches d'entrée et des couches cachées est une fonction ReLU (Rectified Linear Unit) : il s'agit plus ou moins de la fonction la plus efficace, de manière générale, pour cette application précise. Elle peut être approximée par :
 $$ f(x) = ln(1 + e^{x}) $$
-La fonction d'activation de la couche de sortie est une fonction softmax : c'est à dire que, pour chaque entrée, le réseau générera 4 probabilités dont la somme est égale à 1 : la probabilité que l'entrée soit du français, la probabilité que l'entrée soit de l'allemand, etc. et donnera en sortie la langue dont la probabilité est la plus élevée.\\
 
-*** Code commenté de la création du perceptron ***
+La fonction d'activation de la couche de sortie est une fonction softmax : c'est à dire que, pour chaque entrée, le réseau générera 4 probabilités dont la somme est égale à 1 : la probabilité que l'entrée soit du français, la probabilité que l'entrée soit de l'allemand, etc. et donnera en sortie la langue dont la probabilité est la plus élevée.\\
+ \\
+Voici le code créeant le perceptron :\\
+\pythonexternal[showstringspaces=false, breaklines=true,breakatwhitespace=true]{perceptron_reseau.py}
 
 \subsubsection{Réseau LSTM (Long Short-Term Memory)}
 
@@ -313,11 +352,9 @@ Nous avons ensuite effectué d'autres apprentissages en faisant varier les diff�
 
 Une fois que le réseau est créé et entraîné, nous pouvons l'utiliser pour prédire la langue de fichiers audio qui ne sont pas étiquetés. Pour ce faire, nous appliquons aux fichiers de test le même traitement qu'aux fichiers d'apprentissage : paramétrisation en coefficients acoustiques, stockage dans un fichier HDF5, etc. Mais, à la différence des données d'apprentissage, ces données là ne sont pas étiquetées : on ne fournit pas au réseau la langue parlée. Il suffit ensuite simplement de mettre ces données en entrée du réseau de neurones et d'observer l'état de la couche de sortie pour savoir quelle langue a prédit notre réseau pour ce fichier.\\
  \\
-Les résultats des tests du perceptron multi-couches sur un ensemble de fichiers de test nous ont confirmé que le réseau n'est effectivement pas efficace : il ne parvient à prédire correctement que peu de fichiers, et se comporte de manière étrange sur certains passages. La raison de cette inefficacité est probablement qu'un réseau aussi simple n'est pas assez puissant pour détecter suffisamment des paramètres pour pouvoir classifier correctement les langues.\\ *** Renvoi en annexe à des résultats de tests expliqués ***\\
+Les résultats des tests (Annexe [D]) du perceptron multi-couches sur un ensemble de fichiers de test nous ont confirmé que le réseau n'est effectivement pas efficace : il ne parvient à prédire correctement que peu de fichiers, et se comporte de manière étrange sur certains passages. La raison de cette inefficacité est probablement qu'un réseau aussi simple n'est pas assez puissant pour détecter suffisamment des paramètres pour pouvoir classifier correctement les langues.\\
 
 \section{Conclusion}
-
-
 
 - Ce projet nous a fait découvrir les RdN et c'était cool\\
 - C'est dommage que le perceptron ne fonctionne pas
@@ -330,23 +367,71 @@ Les résultats des tests du perceptron multi-couches sur un ensemble de fichiers
 \newpage
 
 \section*{ANNEXES}
+\setcounter{page}{1}
+\pagenumbering{Roman}
+\setstretch{1}
 
-\subsection*{Code principal de lancement de Keras}
+\subsection*{A : Fichiers de transcription}
+\subsubsection*{Allemand : Format .mlfmanu (phonétique)}
 
-\setstretch{1} 
+\begin{lstlisting}[basicstyle=\sffamily, columns=flexible]
+#!MLF!#
+"*/K01BE100.lab"
+0 8063125 sil
+8063125 8799375 vcl
+8799375 8944375 d_h
+8944375 9655625 a
+9655625 10325625 s
+10325625 10686250 v
+10686250 11114375 a:
+11114375 11542500 er
+11542500 12296250 j
+12296250 12595000 E
+12595000 13031875 cl
+13031875 13514375 s
+13514375 13776250 cl
+13776250 13880000 t_h
+13880000 14812500 a:
+14812500 15199375 vcl
+15199375 15761250 er
+15761250 16528750 aI
+16528750 16983750 n
+16983750 18122500 S
+18122500 18864375 eu:
+18864375 19388750 n
+19388750 20325000 er
+20325000 20775000 cl
+20775000 21260625 t_h
+21260625 22203125 a:
+22203125 22894375 cl
+22894375 23703750 k_h
+23703750 24703750 sil
+.
+\end{lstlisting}
 
-\pythonexternal[showstringspaces=false, breaklines=true,breakatwhitespace=true]{kerasAdapte.py}
+\subsubsection*{Anglais : Format .stm (orthographique)}
 
-\subsection*{Fichier de configuration HTK (HCopy)}
+\begin{lstlisting}[breaklines=true,basicstyle=\sffamily, columns=flexible]
+BrunoBowden_2008 1 BrunoBowden_2008 14.46 21.34 <o,f0,male> and so the two of us are here to give you an example of creation and i'm going to be folding one of robert lang 's models
+BrunoBowden_2008 1 BrunoBowden_2008 21.65 29.82 <o,f0,male> and this is the piece of paper it will be made from and you can see all of the folds that are needed for it and rufus is going to be
+BrunoBowden_2008 1 BrunoBowden_2008 30.74 38.23 <o,f0,male> doing some improvisation on his custom five string electric cello and it's very exciting to listen to him
+\end{lstlisting}
 
-\verbatim{configHTK.txt}
+\newpage
 
-\subsection*{Fichier de transcription phonétique (allemand) .mlfmanu}
+\subsection*{B : Fichier de configuration HTK (HCopy)}
 
-\verbatim{german_transcript.mlfmanu}
+\verbatiminput{confightk.txt}
 
-\subsection*{Fichier de transcription orthographique (anglais) .stm}
+\newpage
 
-\verbatim{english_transcript.stm}
+\subsection*{C : Code principal de lancement de Keras} 
+
+\pythonexternal[showstringspaces=false, breaklines=true,breakatwhitespace=true, frame=single, numbers=left]{kerasAdapte.py}
+
+\newpage
+
+\subsection*{D : Résultats des tests} 
+
 
 \end{document}
