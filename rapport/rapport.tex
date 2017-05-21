@@ -131,7 +131,7 @@ Les réseaux de neurones artificiels sont des modèles mathématiques qui sont s
 \\
 L'utilisation d'un réseau de neurones consiste en deux phases : tout d'abord l'apprentissage, où on fournit au réseau un ensemble de données ``étiquetées'' (dans notre cas, des fichiers audio marqués comme étant dans une langue en particulier) de manière à ce que le réseau de neurones puisse déterminer si il a réussi à donner la bonne réponse ou non, et se réguler en conséquence. Une fois que le réseau obtient une marge d'erreur suffisamment basse sur cet ensemble d'apprentissage, on peut l'utiliser pour faire de la détection sur d'autres ensembles de données inconnues, qui ne sont donc pas étiquetées.\\
 \\
-Un neurone (fig. 2) est constitué d'une entrée (composée d'une ou plusieurs valeurs), à laquelle sont assignées des poids. La somme de ces entrées $\times$ poids passe ensuite dans une fonction d'activation qui va la comparer à un certain seuil. Selon le résultat de cette comparaison, la sortie du neurone sera 1 (excité) ou 0.\\
+Un neurone (fig. 2) est constitué d'une entrée (composée d'une ou plusieurs valeurs), à laquelle sont assignées des poids. La somme des termes (entrées $\times$ poids) passe ensuite dans une fonction d'activation qui va la comparer à un certain seuil. Selon le résultat de cette comparaison, la sortie du neurone sera 1 (excité) ou 0.\\
 
 \begin{figure}[h]
   \centerline{\includegraphics[scale=0.6]{img/neurone.png}}
@@ -155,17 +155,17 @@ On dit qu'un réseau de neurones est ``profond'' si il est constitué de plusieu
 
 \subsection{Notre démarche}
 
-L'objectif de ce projet de recherche n'est pas de construire un réseau de neurones par nous-mêmes (nous n'en aurions pas le temps). Pour cette raison, nous allons utiliser une librairie python\footnote{De ce fait, l'intégralité du code que nous allons écrire au cours du projet sera également en python.} qui permet de créer des réseaux de neurones standard de manière très simple et rapide. Notre but sera donc de comprendre comment fonctionne cette librairie, puis de l'utiliser pour construire un (ou plusieurs) réseau qui permettrait de répondre à notre problématique (qui peut donc se résumer par : "Est-il possible d'utiliser un réseau de neurones pour détecter automatiquement la langue d'un contenu audio ?").\\
+L'objectif de ce projet de recherche n'est pas de construire un réseau de neurones par nous-mêmes (nous n'en aurions pas le temps). Pour cette raison, nous allons utiliser une librairie python\footnote{De ce fait, l'intégralité du code que nous allons écrire au cours du projet sera également en python.} qui permet de créer des réseaux de neurones standard de manière très simple et rapide. Notre but sera donc de comprendre comment fonctionne cette librairie, puis de l'utiliser pour construire un (voire plusieurs) réseau qui permettrait de répondre à notre problématique (qui peut donc se résumer par : "Est-il possible d'utiliser un réseau de neurones pour détecter automatiquement la langue d'un contenu audio ?").\\
 Les étapes qui suivent résument les différentes parties de notre travail; elles seront détaillées par la suite.\\
  \\
 Avant de pouvoir utiliser un réseau de neurones, il est nécessaire de traiter correctement les données dont nous disposons en entrée. Ce prétraitement sera une part importante de notre travail.\\
  \\
 \begin{itemize}
-  \item Préparation des données (pré-traitement) :
+  \item Préparation des données (prétraitement) :
     \begin{dingautolist}{192}
     \item Sélection : Nous avons à disposition un corpus de données audio provenant de sources diverses (émissions de radio, conférences...). Comme tout enregistrement audio, ces fichiers contiennent un certain nombre de passages qui ne sont pas de la parole à proprement dit (musique, applaudissements, silences...), et si ces passages sont trop présents ou trop réguliers, cela risque de biaiser les résultats de notre réseau. Dans un premier temps, nous traiterons donc les fichiers audio afin de supprimer de tels passages.
 
-    \item Paramétrisation : Dans le domaine de la reconnaissance de parole, de manière générale, il est plus efficace de travailler non pas directement avec les signaux audio mais plutôt avec certaines caractéristiques spécifiques extraites de ces signaux. Nous effectuerons donc un traitement acoustique afin d'extraire ces caractéristiques, que l'on mettra en entrée du réseau de neurones.
+    \item Paramétrisation : Dans le domaine de la reconnaissance de parole, de manière générale, il est plus efficace de travailler non pas directement avec les signaux audio mais plutôt avec certaines caractéristiques spécifiques extraites de ces signaux. Nous effectuerons donc un traitement acoustique afin d'extraire ces caractéristiques, que l'on donnera ensuite en entrée du réseau de neurones.
 
     \item Stockage : Pour stocker ces ensembles de données, nous utiliserons le format de fichier HDF5, qui permet de classer des groupes de données de manière pratique dans un seul fichier et qui offre certaines options qui nous seront utiles.
     \end{dingautolist}
@@ -205,7 +205,7 @@ L'objectif du prétraitement est donc de transformer les données d'entrée (des
   \caption{La sélection}
 \end{figure}
 
-Certains des fichiers audio utilisés peuvent poser problème durant la phase d'apprentissage. En effet, certains commencent ou finissent avec un passage musical ou un silence qui représente une partie non négligeable du fichier. Le problème étant que si un silence ou un passage musical est présent au début ou à la fin dans tous les fichiers audio anglais par exemple, le réseau de neurones risque d'apprendre ce silence ou cette musique comme étant de l'anglais et ainsi de biaiser les résultats sur de futures analyses.\\
+Certains des fichiers audio utilisés peuvent poser problème durant la phase d'apprentissage. En effet, certains commencent ou finissent avec un passage musical ou un silence qui représente une partie non négligeable du fichier. Le problème étant que si un silence ou un passage musical est présent au début ou à la fin dans tous les fichiers audio anglais par exemple, le réseau de neurones risque ``d'apprendre'' ce silence ou cette musique comme étant de l'anglais et ainsi de biaiser les résultats sur de futures analyses.\\
 \noindent De tels problèmes sont présents sur différents fichiers du corpus dont nous disposons :
 \begin{itemize}
     \item les extraits en anglais commencent tous par un morceau musical suivi d'applaudissements ;
@@ -239,7 +239,7 @@ Pour effectuer cette paramétrisation, nous utilisons HTK\cite{docHTK}, un logic
   \caption{Le stockage des données}
 \end{figure}
 
-Afin de ne pas répéter la phase de prétraitement à chaque apprentissage du réseau de neurones, il est primordial de stocker les données pré-traitées. Pour cela, nous utilisons le format de données HDF5\cite{docHDF5} (grâce à la bibliothèque python h5py\cite{docH5py}) qui nous permet de hiérarchiser et d'organiser facilement nos données une fois le prétraitement terminé.\\
+Afin de ne pas répéter la phase de prétraitement à chaque apprentissage du réseau de neurones, il est primordial de stocker les données prétraitées. Pour cela, nous utilisons le format de données HDF5\cite{docHDF5} (grâce à la bibliothèque python h5py\cite{docH5py}) qui nous permet de hiérarchiser et d'organiser facilement nos données une fois le prétraitement terminé.\\
  \\
  Ce format possède également un autre avantage qui nous est très utile : il permet si nécessaire de transmettre des données en les chargeant directement depuis le disque dur. En effet, pour éviter les régularités dans les fichiers de données qui pourraient biaiser le processus d'apprentissage, les données en entrée du réseau de neurones seront mélangées avant le début de l'apprentissage. Pour ce faire, il est nécessaire de lui fournir l'intégralité des données en une seule fois. De ce fait, la quantité de données générée par la transformation des fichiers audio en coefficients acoustiques peut être trop importante pour pouvoir charger les données directement en mémoire vive selon la taille de départ du corpus. Le format de données HDF5 nous permet donc de parer à ce problème éventuel en chargeant les données directement depuis le disque dur sans surcharger la mémoire vive, même si la vitesse de traitement s'en trouve diminuée.\\
  \\
@@ -253,7 +253,7 @@ Au final, la taille des données ne nous a pas posé de problème, étant suffis
   \caption{L'utilisation du réseau de neurones}
 \end{figure}
 
-Une fois les données mises en bonne forme dans notre fichier HDF5, nous pouvons les transmettre au réseau de neurones et de commencer l'apprentissage. Pour cela, il nous faudra formater les données sous la forme attendue par le réseau (qui pourra changer selon le type de réseau construit) et trouver les bons paramètres pour le réseau qui nous permettront d'obtenir de meilleurs taux de reconnaissance.
+Une fois les données correctement mises en forme dans notre fichier HDF5, nous pouvons les transmettre au réseau de neurones et commencer l'apprentissage. Pour cela, il nous faudra formater les données sous la forme attendue par le réseau (qui pourra changer selon le type de réseau construit) et trouver les bons paramètres pour le réseau qui nous permettront d'obtenir de meilleurs taux de reconnaissance.
 
 \subsection{Keras}
 
@@ -270,7 +270,7 @@ De plus, Keras est très pratique à utiliser en python (les réseaux créés fo
 \textit{Voir \cite{lecun2015}.}
 
 \subsubsection{Généralités sur la création de réseaux de neurones}
-Lorsque on crée un réseau de neurones, il est nécessaire d'en définir la structure. Le premier paramètre de cette structure est le nombre de couches du réseau. Ajouter plus de couches permet d'apprendre des paramètres plus ``précis'' sur les données. Ce qui n'est pas forcément une bonne chose si ces paramètres représentent moins bien la caractéristique des entrées que l'on cherche à déterminer (la langue dans notre cas).\\
+Lorsque on crée un réseau de neurones, il est nécessaire d'en définir la structure. Le premier paramètre de cette structure est le nombre de couches du réseau. Ajouter plus de couches permet ``d'apprendre'' des paramètres plus ``précis'' sur les données. Ce qui n'est pas forcément une bonne chose si ces paramètres représentent moins bien la caractéristique des entrées que l'on cherche à déterminer (la langue dans notre cas).\\
  \\
 Il nous faut aussi déterminer la taille de ces couches (le nombre de neurones qu'elles contiennent). La taille de la couche d'entrée doit être la même que le nombre de valeurs contenues dans un exemple du corpus d'apprentissage, et la taille de la couche de sortie dépend du nombre de langues différentes qu'on souhaite détecter. La taille des couches cachées est quand à elle habituellement comprise entre celle de la couche d'entrée et celle de la couche de sortie; c'est un des paramètres que l'on peut ajuster pour améliorer la performance du réseau.\\
  \\
@@ -285,17 +285,17 @@ Le perceptron multi-couches est un des modèles de réseau les plus simples à m
 Pour ce perceptron multi-couches, nous utilisons deux couches de taille (nombre de valeurs dans un vecteur acoustique $\times$ nombre de vecteurs dans une trame) dont la couche d'entrée, pour avoir effectivement un neurone par valeur réelle, et une couche de sortie de taille 4, puisque nous avons 4 langages possibles différents. Entre les deux, nous avons deux couches cachées, dont nous avons fixé la taille à 256 (suivant les instructions de nos encadrants).\\
 La fonction d'activation des couches d'entrée et des couches cachées est une fonction ReLU (Rectified Linear Unit) : il s'agit plus ou moins de la fonction la plus efficace, de manière générale, pour cette application précise. Elle peut être approximée par :
 $$ f(x) = ln(1 + e^{x}) $$
-La fonction d'activation de la couche de sortie est une fonction softmax : c'est à dire que, pour chaque entrée, le réseau générera 4 probabilités dont la somme est égale à 1 : la probabilité que l'entrée soit du français, la probabilité que l'entrée soit de l'allemand... et donnera en sortie la langue dont la probabilité est la plus élevée.\\
+
+La fonction d'activation de la couche de sortie est une fonction softmax : c'est à dire que, pour chaque entrée, le réseau générera 4 probabilités dont la somme est égale à 1 : la probabilité que l'entrée soit du français, la probabilité que l'entrée soit de l'allemand, etc. et donnera en sortie la langue dont la probabilité est la plus élevée.\\
  \\
 Voici le code créeant le perceptron :\\
 \pythonexternal[showstringspaces=false, breaklines=true,breakatwhitespace=true]{perceptron_reseau.py}
 
-
 \subsubsection{Réseau LSTM (Long Short-Term Memory)}
 
-Les réseaux LSTM sont des réseaux récurrents. Le principe d'un réseau récurrent est de se ``souvenir'' des résultats de l'apprentissage de données précédentes pour essayer d'améliorer sa performance sur les données actuelles :autrement dit, en utilisant les résultats des prédictions sur les données précédentes lors de l'évaluation des données actuelles, on utilise un contexte qui peut aider à prendre une décision.\\
+Les réseaux LSTM sont des réseaux récurrents. Le principe d'un réseau récurrent est de se ``souvenir'' des résultats de l'apprentissage de données précédentes pour essayer d'améliorer sa performance sur les données actuelles : autrement dit, en utilisant les résultats des prédictions sur les données précédentes lors de l'évaluation des données actuelles, on utilise un contexte qui peut aider à prendre une décision.\\
  \\
-Le nombre de couches, les fonctions d'activation et la taile des couches cachées et de sortie de ce réseau sont les mêmes que celles du perceptron multi-couches. La taille de la couche d'entrée va différer : en effet, pour pouvoir fournir un contexte pertinent lors de l'évaluation suivante, on a besoin de retenir plus qu'une seule trame de données. On ne va donc plus fournir en entrée du réseau une seule trame mais un ensemble de trames (de taille fixe); le résultat de l'évaluation d'un ensemble de trames aura donc de l'influence sur l'évaluation de l'ensemble de trames suivant.\\
+Le nombre de couches, les fonctions d'activation et la taille des couches cachées et de sortie de ce réseau sont les mêmes que celles du perceptron multi-couches. La taille de la couche d'entrée va différer : en effet, pour pouvoir fournir un contexte pertinent lors de l'évaluation suivante, on a besoin de retenir plus qu'une seule trame de données. On ne va donc plus fournir en entrée du réseau une seule trame mais un ensemble de trames (de taille fixe); le résultat de l'évaluation d'un ensemble de trames aura donc de l'influence sur l'évaluation de l'ensemble de trames suivant.\\
  \\
 Néanmoins, par manque de temps lors de la fin du projet, nous n'avons pas pu implémenter ce type de réseau.
 
@@ -317,7 +317,7 @@ Pour faire l'apprentissage proprement dit, le réseau va procéder de la manièr
   \caption{Représentation d'une epoch d'apprentissage}
 \end{figure}
 
-\noindent Ce traitement de toutes les données du corpus d'apprentissage s'appelle une epoch. On effectue généralement plusieurs epochs pour un apprentissage (pour nous, environ une centaine), les performances du réseau étant censées s'améliorer au fil des epochs. \\
+\noindent Ce traitement de toutes les données du corpus d'apprentissage s'appelle une epoch. On effectue généralement plusieurs epochs pour un apprentissage (environ une centaine dans notre cas), les performances du réseau étant censées s'améliorer au fil des epochs. \\
  \\
 Pour améliorer les capacités d'apprentissage de notre réseau, nous utilisons une méthode classique d'apprentissage automatique qui consiste à séparer nos données d'apprentissage en 2 corpus distincts : 
 
@@ -326,11 +326,11 @@ Pour améliorer les capacités d'apprentissage de notre réseau, nous utilisons 
 \item et un corpus de validation (appelé \textit{dev}), sur lequel le réseau va tester ses capacités après chaque epoch, et utiliser les résultats de ce test pour améliorer l'apprentissage sur le corpus de base.
 \end{itemize}
 
-\noindent inalement, si l'apprentissage se déroule conformément à ce qu'on attendait, on utilise le corpus de test pour évaluer les performances de notre modèle sur des données qu'il n'a jamais vues.
+\noindent Finalement, si l'apprentissage se déroule conformément à ce qu'on attendait, on utilise le corpus de test pour évaluer les performances de notre modèle sur des données qu'il n'a jamais vues.
 \newpage
 \subsubsection{Formatage des données pour le perceptron multi-couches}
 
-En entrée du réseau, nous ne pouvons pas simplement mettre un seul vecteur acoustique à la fois : en effet, cela n'a pas vraiment de sens d'essayer d'en prédire la langue puisqu'il correspond à une durée de parole très courte, de quelques millisecondes seulement. Pour cette raison, nous passons en entrée un ensemble de ces vecteurs, que l'on appelle une trame, et dont la durée de parole combinée correspondant aux vecteurs qui la compose fait plutôt quelques dizaines de millisecondes, ce qui peut permettre de plutôt travailler sur des syllabes ou des mots courts. Le nombre de vecteurs composant cette trame est donc un des paramètres de notre réseau.\\
+En entrée du réseau, nous ne pouvons pas simplement mettre un seul vecteur acoustique à la fois : en effet, cela n'a pas vraiment de sens d'essayer d'en prédire la langue puisqu'il correspond à une durée de parole très courte, de quelques millisecondes seulement. Pour cette raison, nous passons en entrée un ensemble de ces vecteurs, que l'on appelle une trame, et dont la durée de parole combinée correspondant aux vecteurs qui la compose est plutôt de quelques dizaines de millisecondes, ce qui permet de travailler sur des syllabes ou des mots courts. Le nombre de vecteurs composant cette trame est donc un des paramètres de notre réseau.\\
  \\
 De plus, afin d'être sûrs de repérer tous les ``traits'' de caractère possibles d'un langage, nous utilisons une fenêtre glissante (fig. 11) : plutôt que de séparer un fichier d'entrée en le découpant en X trames successives, nous ``décalons'' chaque trame successive d'un certain nombre de vecteurs; ainsi, nous obtenons un ensemble de trames où les $n$ premiers vecteurs de l'une sont les $n$ derniers vecteurs de la précédente. Ce décalage est donc aussi un paramètre de notre réseau.
 
@@ -340,7 +340,7 @@ De plus, afin d'être sûrs de repérer tous les ``traits'' de caractère possib
   \caption{Découpage des données en trames}
 \end{figure}
 
-\subsubsection{Résultat de l'apprentissage sur le perceptron multi-couches}
+\subsubsection{Résultats de l'apprentissage sur le perceptron multi-couches}
 
 Le premier apprentissage que nous avons effectué sur le perceptron s'est révélé infructueux. En effet, le réseau apprenait correctement sur le corpus d'apprentissage et s'améliorait linéairement au fur et à mesure mais ne s'améliorait pas sur le corpus de validation et stagnait aux alentours de 50\% de précision, ce qui semblait indiquer que le réseau n'apprenait rien d'assez général qui puisse l'aider à s'améliorer sur le corpus de validation.\\
  \\
@@ -352,7 +352,7 @@ Nous avons ensuite effectué d'autres apprentissages en faisant varier les diff�
 
 Une fois que le réseau est créé et entraîné, nous pouvons l'utiliser pour prédire la langue de fichiers audio qui ne sont pas étiquetés. Pour ce faire, nous appliquons aux fichiers de test le même traitement qu'aux fichiers d'apprentissage : paramétrisation en coefficients acoustiques, stockage dans un fichier HDF5, etc. Mais, à la différence des données d'apprentissage, ces données là ne sont pas étiquetées : on ne fournit pas au réseau la langue parlée. Il suffit ensuite simplement de mettre ces données en entrée du réseau de neurones et d'observer l'état de la couche de sortie pour savoir quelle langue a prédit notre réseau pour ce fichier.\\
  \\
-Les résultats des tests (Annexe [D]) du perceptron multi-couches sur un ensemble de fichiers de test nous ont confirmé que le réseau n'est effectivement pas efficace : il ne parvient à prédire correctement que peu de fichiers, et se comporte de manière étrange sur certains passages. La raison de cette inefficacité est probablement qu'un réseau aussi simple n'est pas assez puissant pour détecter suffisement des paramètres pour pouvoir classifier correctement les langues.\\
+Les résultats des tests (Annexe [D]) du perceptron multi-couches sur un ensemble de fichiers de test nous ont confirmé que le réseau n'est effectivement pas efficace : il ne parvient à prédire correctement que peu de fichiers, et se comporte de manière étrange sur certains passages. La raison de cette inefficacité est probablement qu'un réseau aussi simple n'est pas assez puissant pour détecter suffisamment des paramètres pour pouvoir classifier correctement les langues.\\
 
 \section{Conclusion}
 
@@ -419,7 +419,7 @@ BrunoBowden_2008 1 BrunoBowden_2008 30.74 38.23 <o,f0,male> doing some improvisa
 
 \newpage
 
-\subsection*{B : Fichier de configuration HTK}
+\subsection*{B : Fichier de configuration HTK (HCopy)}
 
 \verbatiminput{confightk.txt}
 
