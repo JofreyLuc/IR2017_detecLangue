@@ -228,7 +228,7 @@ Certains des fichiers audio utilisés peuvent poser problème durant la phase d'
 Nous pourrions utiliser directement les signaux audio en entrée de notre réseau de neurones : il nous suffirait par exemple de relever la valeur du signal tous les X intervalles de temps et de fournir directement ces valeurs au réseau. Cependant, dans le domaine de la reconnaissance de parole, on utilise plutôt des signaux paramétrisés.
 La paramétrisation d'un signal consiste en l'extraction d'un ensemble spécifique de caractéristiques de ce signal. Actuellement, la paramétrisation la plus utilisée et la plus efficace est celle des coefficients MFCC\cite{haton2006} (Mel-frequency cepstral coefficients). Ils ont entre autres comme avantage d'être peu sensibles à la puissance acoustique du signal. Cela permet d'atténuer le poids de cette caractéristique qui ne présente généralement que peu d'intérêt dans le domaine de la reconnaissance de parole (comme c'est le cas pour notre projet).\\
 \\
-Pour effectuer cette paramétrisation, nous utilisons HTK\cite{docHTK}, un logiciel multiplateforme développé par le département d'ingénierie de l'Université de Cambridge, qui est une sorte de ``boîte à outils'' permettant de réaliser toutes sortes de manipulations utiles à la reconnaissance de la parole. Il permet notamment d'effectuer de manière très simple la paramétrisation de fichiers audio en coefficients acoustiques correspondants. Les fichiers ainsi obtenus sont des fichiers .mfcc.
+Pour effectuer cette paramétrisation, nous utilisons HTK\cite{docHTK}, un logiciel multiplateforme développé par le département d'ingénierie de l'Université de Cambridge, qui est une sorte de ``boîte à outils'' permettant de réaliser toutes sortes de manipulations utiles à la reconnaissance de la parole (Voir le fichier de configuration en annexe [B]). Il permet notamment d'effectuer de manière très simple la paramétrisation de fichiers audio en coefficients acoustiques correspondants. Les fichiers ainsi obtenus sont des fichiers .mfcc.
  
 \subsection{Stockage des données}
 
@@ -374,7 +374,12 @@ Nous remercions nos enseignants référents, Odile Mella et Dominique Fohr.
 \bibliographystyle{unsrt}
 \bibliography{biblio}
 
+\subsection*{Sources des images}
+\noindent Figure 1 : Cours de reconnaissance de la parole, Odile Mella, M1 Informatique\\
+Figure 2 : wikiversity.org/wiki/Réseaux\_de\_neurones\\
+Figure 3 : wikipedia.org/wiki/Réseau\_de\_neurones\_artificiels\\
 
+\textit{Nous avons crée les autres images.}
 
 \thispagestyle{empty}
 
