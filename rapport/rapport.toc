@@ -1,0 +1,21 @@
+\select@language {french}
+\contentsline {section}{\numberline {1}Introduction et probl\IeC {\'e}matique}{1}
+\contentsline {section}{\numberline {2}Pr\IeC {\'e}sentation g\IeC {\'e}n\IeC {\'e}rale}{2}
+\contentsline {subsection}{\numberline {2.1}Les r\IeC {\'e}seaux de neurones artificiels}{2}
+\contentsline {subsection}{\numberline {2.2}Notre d\IeC {\'e}marche}{3}
+\contentsline {section}{\numberline {3}Pr\IeC {\'e}traitement : pr\IeC {\'e}paration des donn\IeC {\'e}es}{5}
+\contentsline {subsection}{\numberline {3.1}S\IeC {\'e}lection des donn\IeC {\'e}es utilisables}{5}
+\contentsline {subsection}{\numberline {3.2}Param\IeC {\'e}trisation en coefficients acoustiques}{6}
+\contentsline {subsection}{\numberline {3.3}Stockage des donn\IeC {\'e}es}{7}
+\contentsline {section}{\numberline {4}Utilisation des r\IeC {\'e}seaux de neurones}{8}
+\contentsline {subsection}{\numberline {4.1}Keras}{8}
+\contentsline {subsection}{\numberline {4.2}D\IeC {\'e}finir l'architecture du r\IeC {\'e}seau}{9}
+\contentsline {subsubsection}{\numberline {4.2.1}G\IeC {\'e}n\IeC {\'e}ralit\IeC {\'e}s sur la cr\IeC {\'e}ation de r\IeC {\'e}seaux de neurones}{9}
+\contentsline {subsubsection}{\numberline {4.2.2}Perceptron multi-couches}{10}
+\contentsline {subsubsection}{\numberline {4.2.3}R\IeC {\'e}seau LSTM (Long Short-Term Memory)}{10}
+\contentsline {subsection}{\numberline {4.3}Apprendre les param\IeC {\`e}tres du r\IeC {\'e}seau sur le corpus d'apprentissage}{11}
+\contentsline {subsubsection}{\numberline {4.3.1}G\IeC {\'e}n\IeC {\'e}ralit\IeC {\'e}s sur les m\IeC {\'e}canismes d'apprentissage}{11}
+\contentsline {subsubsection}{\numberline {4.3.2}Formatage des donn\IeC {\'e}es pour le perceptron multi-couches}{13}
+\contentsline {subsubsection}{\numberline {4.3.3}R\IeC {\'e}sultat de l'apprentissage sur le perceptron multi-couches}{13}
+\contentsline {subsection}{\numberline {4.4}Utiliser le r\IeC {\'e}seau pour \IeC {\'e}tiqueter le corpus de test}{14}
+\contentsline {section}{\numberline {5}Conclusion}{14}
