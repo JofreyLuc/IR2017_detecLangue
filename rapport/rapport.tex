@@ -6,7 +6,7 @@
 \usepackage{pifont}
 \usepackage{xcolor}
 \usepackage[left=2.5cm,right=2.5cm,top=3cm,bottom=3cm]{geometry}
-\renewcommand{\baselinestretch}{1.3}
+\usepackage{setspace}
 
 \definecolor{deepblue}{rgb}{0,0,0.5}
 \definecolor{deepred}{rgb}{0.6,0,0}
@@ -54,6 +54,8 @@
 \date{02/05/2017}
 
 \begin{document}
+
+\setstretch{1.3} 
 
 \tableofcontents
 \newpage
@@ -315,10 +317,24 @@ Les résultats des tests du perceptron multi-couches sur un ensemble de fichiers
 
 \section{Conclusion}
 
+
+
 - Ce projet nous a fait découvrir les RdN et c'était cool\\
 - C'est dommage que le perceptron ne fonctionne pas
 
+\newpage
+
 \bibliographystyle{unsrt}
 \bibliography{biblio}
+
+\newpage
+
+\section*{ANNEXES}
+
+\subsection*{Code principal de lancement de Keras}
+
+\setstretch{1} 
+
+\pythonexternal[showstringspaces=false, breaklines=true,breakatwhitespace=true]{kerasAdapte.py}
 
 \end{document}
