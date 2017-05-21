@@ -16,6 +16,6 @@
 \contentsline {subsection}{\numberline {4.3}Apprendre les param\IeC {\`e}tres du r\IeC {\'e}seau sur le corpus d'apprentissage}{11}
 \contentsline {subsubsection}{\numberline {4.3.1}G\IeC {\'e}n\IeC {\'e}ralit\IeC {\'e}s sur les m\IeC {\'e}canismes d'apprentissage}{11}
 \contentsline {subsubsection}{\numberline {4.3.2}Formatage des donn\IeC {\'e}es pour le perceptron multi-couches}{12}
-\contentsline {subsubsection}{\numberline {4.3.3}R\IeC {\'e}sultats de l'apprentissage sur le perceptron multi-couches}{12}
+\contentsline {subsubsection}{\numberline {4.3.3}R\IeC {\'e}sultats de l'apprentissage sur le perceptron multi-couches}{13}
 \contentsline {subsection}{\numberline {4.4}Utiliser le r\IeC {\'e}seau pour \IeC {\'e}tiqueter le corpus de test}{13}
-\contentsline {section}{\numberline {5}Conclusion}{14}
+\contentsline {section}{\numberline {5}Conclusion}{15}

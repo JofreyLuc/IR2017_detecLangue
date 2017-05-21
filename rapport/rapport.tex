@@ -331,14 +331,14 @@ Pour améliorer les capacités d'apprentissage de notre réseau, nous utilisons 
 \subsubsection{Formatage des données pour le perceptron multi-couches}
 
 En entrée du réseau, nous ne pouvons pas simplement mettre un seul vecteur acoustique à la fois : en effet, cela n'a pas vraiment de sens d'essayer d'en prédire la langue puisqu'il correspond à une durée de parole très courte, de quelques millisecondes seulement. Pour cette raison, nous passons en entrée un ensemble de ces vecteurs, que l'on appelle une trame, et dont la durée de parole combinée correspondant aux vecteurs qui la composent est plutôt de quelques dizaines de millisecondes, ce qui permet de travailler sur des syllabes ou des mots courts. Le nombre de vecteurs composant cette trame est donc un des paramètres de notre réseau.\\
- \\
-De plus, afin d'être sûrs de repérer tous les ``traits'' de caractère possibles d'un langage, nous utilisons une fenêtre glissante (fig. 11) : plutôt que de séparer un fichier d'entrée en le découpant en X trames successives, nous ``décalons'' chaque trame successive d'un certain nombre de vecteurs; ainsi, nous obtenons un ensemble de trames où les $n$ premiers vecteurs de l'une sont les $n$ derniers vecteurs de la précédente. Ce décalage est donc aussi un paramètre de notre réseau.
 
 \hphantom{.}
 \begin{figure}[h]
   \centerline{\includegraphics[scale=0.7]{img/schema_decoupage_trame.png}}
   \caption{Découpage des données en trames}
 \end{figure}
+
+De plus, afin d'être sûrs de repérer tous les ``traits'' de caractère possibles d'un langage, nous utilisons une fenêtre glissante (fig. 11) : plutôt que de séparer un fichier d'entrée en le découpant en X trames successives, nous ``décalons'' chaque trame successive d'un certain nombre de vecteurs; ainsi, nous obtenons un ensemble de trames où les $n$ premiers vecteurs de l'une sont les $n$ derniers vecteurs de la précédente. Ce décalage est donc aussi un paramètre de notre réseau.
 
 \subsubsection{Résultats de l'apprentissage sur le perceptron multi-couches}
 
