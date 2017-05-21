@@ -7,6 +7,7 @@
 \usepackage{xcolor}
 \usepackage[left=2.5cm,right=2.5cm,top=3cm,bottom=3cm]{geometry}
 \usepackage{setspace}
+\usepackage{verbatim}
 
 \definecolor{deepblue}{rgb}{0,0,0.5}
 \definecolor{deepred}{rgb}{0.6,0,0}
@@ -57,12 +58,16 @@
 
 \setstretch{1.3} 
 
+\thispagestyle{empty}
+
 \tableofcontents
 \newpage
 
 \newcommand\pythonexternal[2][]{{
 \pythonstyle
 \lstinputlisting[#1]{#2}}}
+
+\setcounter{page}{1}
 
 \section{Introduction et problématique}
 
@@ -220,7 +225,7 @@ Une fois les données mises en bonne forme dans notre fichier HDF5, nous pouvons
 
 \subsection{Keras}
 
-Keras\cite{docKeras} est une librairie open-source Python utilisée pour construire, entraîner et manipuler des réseaux de neurones artificiels, développée par François Chollet dans le cadre du projet de recherche ONEIROS (Open-ended Neuro-Electronic Intelligent Robot Operating System). L'avantage de cette librairie est qu'elle est très haut niveau, elle permet donc de créer des réseaux de neurones très rapidement et très simplement. En effet, cette dernière n'est en quelque sorte qu'une "interface de surcouche" qui se place au-dessus de librairies de réseaux de neurones plus bas niveau comme Theano, qui est la sous-couche que nous utiliserons avec Keras.\\
+Keras\cite{docKeras} est une librairie open-source Python utilisée pour construire, entraîner et manipuler des réseaux de neurones artificiels, développée par François Chollet dans le cadre du projet de recherche ONEIROS (Open-ended Neuro-Electronic Intelligent Robot Operating System). L'avantage de cette librairie est qu'elle est très haut niveau, elle permet donc de créer des réseaux de neurones très rapidement et très simplement. En effet, cette dernière n'est en quelque sorte qu'une "interface de surcouche" qui se place au-dessus de librairies de réseaux de neurones plus bas niveau (comme par exemple Theano\cite{docTheano}, qui est la sous-couche que nous utiliserons avec Keras).\\
  \\
 Il est possible de créer un réseau de neurones (parfois complexe) avec Keras en littéralement quelques lignes :\\
 
@@ -330,11 +335,18 @@ Les résultats des tests du perceptron multi-couches sur un ensemble de fichiers
 \newpage
 
 \section*{ANNEXES}
+\setcounter{page}{1}
+\setstretch{1}
 
-\subsection*{Code principal de lancement de Keras}
+\subsection*{Fichier de configuration HTK}
 
-\setstretch{1} 
+\verbatiminput{confightk.txt}
 
-\pythonexternal[showstringspaces=false, breaklines=true,breakatwhitespace=true]{kerasAdapte.py}
+\newpage
+
+\subsection*{Code principal de lancement de Keras} 
+
+\pythonexternal[showstringspaces=false, breaklines=true,breakatwhitespace=true, frame=single, numbers=left]{kerasAdapte.py}
+
 
 \end{document}
