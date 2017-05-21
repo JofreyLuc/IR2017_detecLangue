@@ -343,7 +343,13 @@ De plus, afin d'être sûrs de repérer tous les ``traits'' de caractère possib
 \subsubsection{Résultats de l'apprentissage sur le perceptron multi-couches}
 
 Le premier apprentissage que nous avons effectué sur le perceptron s'est révélé infructueux. En effet, le réseau apprenait correctement sur le corpus d'apprentissage et s'améliorait linéairement au fur et à mesure mais ne s'améliorait pas sur le corpus de validation et stagnait aux alentours de 50\% de précision, ce qui semblait indiquer que le réseau n'apprenait rien d'assez général qui puisse l'aider à s'améliorer sur le corpus de validation.\\
- \\
+
+\hphantom{.}
+\begin{figure}[h]
+  \centerline{\includegraphics[scale=0.6]{img/courbe_acc.png}}
+  \caption{Courbe de la précision du réseau sur les corpus d'apprentissage et de validation}
+\end{figure}
+
 Nous avons ensuite effectué d'autres apprentissages en faisant varier les différents paramètres (taille des trames d'entrée, décalage), notamment en augmentant la taille des trames d'entrée de manière significative sur certains essais en partant de la supposition que la taille des trames était peut-être insuffisante pour apporter de l'information pertinente au réseau.\\
 \noindent Nous avons également essayé de normaliser les données en mettant la variance de chaque composante des vecteurs acoustiques à 1 pour les corpus d'apprentissage et de validation).\\
 \noindent Tous les essais sur le perceptron ont cependant conduit au même résultat que précédemment : aucune amélioration sur le corpus de validation pendant la phase d'apprentissage.

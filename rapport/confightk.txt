@@ -1,0 +1,34 @@
+# Format du fichier source
+SOURCEKIND=WAVEFORM
+SOURCEFORMAT=WAV
+
+# Eventuellement nécessaire pour des processeurs différents (big/little endian)
+#NATURALREADORDER=T
+#NATURALWRITEORDER=T
+
+# Format du fichier de sortie
+TARGETFORMAT=HTK
+TARGETRATE=100000.0 # = 10ms
+TARGETKIND=MFCC_E_Z #E : ajoute l'énergie en 13è, Z : mean cepstre removal
+
+# Fenêtres de décalage des dérivées
+DELTAWINDOW=3
+ACCWINDOW=2
+
+CEPLIFTER=0
+SAVECOMPRESSED=F
+SAVEWITHCRC=F
+
+# Taille d'une fenêtre (en s^-7) = 25ms
+WINDOWSIZE=250000.0
+
+# Utilisation du fenêtrage de Hamming
+USEHAMMING=T
+
+PREEMCOEF=0.97
+
+NUMCHANS=24
+NUMCEPS=12
+
+ENORMALISE=T
+ADDDITHER=5
