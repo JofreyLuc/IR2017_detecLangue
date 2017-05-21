@@ -50,12 +50,45 @@
   {€}{{\euro}}1 {£}{{\pounds}}1 {«}{{\guillemotleft}}1
   {»}{{\guillemotright}}1 {ñ}{{\~n}}1 {Ñ}{{\~N}}1 {¿}{{?`}}1
 }
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
 
 \author{Alexis Lanoix et Jofrey Luc}
 \title{Rapport init recherche}
 \date{02/05/2017}
 
 \begin{document}
+
+
+\begin{titlepage}
+  \begin{sffamily}
+  \begin{center}
+
+    \includegraphics[scale=2]{img/univLorraine.png}~\\[1.5cm]
+
+    \textsc{\LARGE Université de Lorraine}\\[2cm]
+
+    \textsc{\Large Projet d'initiation à la Recherche}\\[1.5cm]
+
+    \HRule \\[0.4cm]
+    { \huge \bfseries Multispeech : Reconnaissance de la langue dans un flux audio\\[0.4cm] }
+
+    \HRule \\[2cm]
+
+    \textit{\large Auteurs} :\\[0.4cm]
+    {\Large Alexis Lanoix \& Jofrey Luc}\\[1.2cm]
+    
+    \textit{\large Enseignants référents :}\\[0.4cm]
+    {\Large Odile Mella \& Dominique Fohr}\\
+    
+
+    \vfill
+
+    {\large 2017}
+
+  \end{center}
+  \end{sffamily}
+\end{titlepage}
+
 
 \setstretch{1.3} 
 
@@ -255,8 +288,10 @@ Pour ce perceptron multi-couches, nous utilisons deux couches de taille (nombre 
 La fonction d'activation des couches d'entrée et des couches cachées est une fonction ReLU (Rectified Linear Unit) : il s'agit plus ou moins de la fonction la plus efficace, de manière générale, pour le moment pour cette application précise. Elle peut être approximée par :
 $$ f(x) = ln(1 + e^{x}) $$
 La fonction d'activation de la couche de sortie est une fonction softmax : c'est à dire que, pour chaque entrée, le réseau générera 4 probabilités dont la somme est égale à 1 : la probabilité que l'entrée soit du français, la probabilité que l'entrée soit de l'allemand... et donnera en sortie la langue dont la probabilité est la plus élevée.\\
+ \\
+Voici le code créeant le perceptron :\\
+\pythonexternal[showstringspaces=false, breaklines=true,breakatwhitespace=true]{perceptron_reseau.py}
 
-*** Code commenté de la création du perceptron ***
 
 \subsubsection{Réseau LSTM (Long Short-Term Memory)}
 
@@ -323,8 +358,6 @@ Les résultats des tests du perceptron multi-couches sur un ensemble de fichiers
 
 \section{Conclusion}
 
-
-
 - Ce projet nous a fait découvrir les RdN et c'était cool\\
 - C'est dommage que le perceptron ne fonctionne pas
 
@@ -337,15 +370,10 @@ Les résultats des tests du perceptron multi-couches sur un ensemble de fichiers
 
 \section*{ANNEXES}
 \setcounter{page}{1}
+\pagenumbering{Roman}
 \setstretch{1}
 
-\subsection*{Fichier de configuration HTK}
-
-\verbatiminput{confightk.txt}
-
-\newpage
-
-\subsection*{Fichiers de transcription}
+\subsection*{A : Fichiers de transcription}
 \subsubsection*{Allemand : Format .mlfmanu (phonétique)}
 
 \begin{lstlisting}[basicstyle=\sffamily, columns=flexible]
@@ -393,7 +421,13 @@ BrunoBowden_2008 1 BrunoBowden_2008 30.74 38.23 <o,f0,male> doing some improvisa
 
 \newpage
 
-\subsection*{Code principal de lancement de Keras} 
+\subsection*{B : Fichier de configuration HTK}
+
+\verbatiminput{confightk.txt}
+
+\newpage
+
+\subsection*{C : Code principal de lancement de Keras} 
 
 \pythonexternal[showstringspaces=false, breaklines=true,breakatwhitespace=true, frame=single, numbers=left]{kerasAdapte.py}
 
