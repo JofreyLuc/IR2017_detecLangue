@@ -9,7 +9,6 @@ from glob import glob
 import configparser
 import json
 
-
 def parseConfig(configFilePath) :
     config = configparser.ConfigParser()
     config.read(configFilePath)
@@ -24,23 +23,23 @@ def parseConfig(configFilePath) :
     TRAIN_MFCC_FOLDER       = config.get('chemin_train', 'chemin_dossier_mfcc_train')
     TRAIN_HDF5_FILE_PATH    = config.get('chemin_train', 'chemin_dossier_transcripts_train')
     
-    DEV_AUDIO_FOLDER      = config.get('chemin_dev', 'chemin_dossier_audio_train')
-    DEV_TRANSCRIPTS_FOLDER = config.get('chemin_dev', 'chemin_dossier_transcripts_train')
-    DEV_MFCC_FOLDER       = config.get('chemin_dev', 'chemin_dossier_mfcc_train')
-    DEV_HDF5_FILE_PATH    = config.get('chemin_dev', 'chemin_dossier_transcripts_train')
+    DEV_AUDIO_FOLDER      = config.get('chemin_dev', 'chemin_dossier_audio_dev')
+    DEV_TRANSCRIPTS_FOLDER = config.get('chemin_dev', 'chemin_dossier_transcripts_dev')
+    DEV_MFCC_FOLDER       = config.get('chemin_dev', 'chemin_dossier_mfcc_dev')
+    DEV_HDF5_FILE_PATH    = config.get('chemin_dev', 'chemin_dossier_transcripts_dev')
     
-    TEST_AUDIO_FOLDER      = config.get('chemin_test', 'chemin_dossier_audio_train')
-    TEST_TRANSCRIPTS_FOLDER = config.get('chemin_test', 'chemin_dossier_transcripts_train')
-    TEST_MFCC_FOLDER       = config.get('chemin_test', 'chemin_dossier_mfcc_train')
-    TEST_HDF5_FILE_PATH    = config.get('chemin_test', 'chemin_dossier_transcripts_train')
-    
+    TEST_AUDIO_FOLDER      = config.get('chemin_test', 'chemin_dossier_audio_test')
+    TEST_TRANSCRIPTS_FOLDER = config.get('chemin_test', 'chemin_dossier_transcripts_test')
+    TEST_MFCC_FOLDER       = config.get('chemin_test', 'chemin_dossier_mfcc_test')
+    TEST_HDF5_FILE_PATH    = config.get('chemin_test', 'chemin_dossier_transcripts_test')
+
+    global AFFICHAGE
     AFFICHAGE = bool(config.get('param_pretraitement', 'affichage'))
     
     LANGUAGES = json.loads(config.get('liste_langages_formats', 'langues'))
     
     AUDIO_TYPES = json.loads(config.get('liste_langages_formats', 'formats_audio'))
     TRANSCRIPT_TYPES = json.loads(config.get('liste_langages_formats', 'formats_transcriptions'))
-    
     
 #Gestion de l'OS
 linux=False
