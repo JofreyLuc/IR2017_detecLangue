@@ -12,6 +12,8 @@ import json
 def parseConfig(configFilePath) :
     config = configparser.ConfigParser()
     config.read(configFilePath)
+
+    global HCOPY_PATH, HCOPY_CONFIG_FILE, HLIST_PATH, HLIST_CONFIG_FILE, TRAIN_AUDIO_FOLDER, TRAIN_TRANSCRIPTS_FOLDER, TRAIN_MFCC_FOLDER, TRAIN_HDF5_FILE_PATH, DEV_AUDIO_FOLDER, DEV_TRANSCRIPTS_FOLDER, DEV_MFCC_FOLDER, DEV_HDF5_FILE_PATH, TEST_AUDIO_FOLDER, TEST_TRANSCRIPTS_FOLDER, TEST_MFCC_FOLDER, TEST_HDF5_FILE_PATH, AFFICHAGE, LANGUAGES, AUDIO_TYPES, TRANSCRIPT_TYPES
     
     HCOPY_PATH              = config.get('chemin_htk', 'chemin_executable_hcopy')
     HCOPY_CONFIG_FILE       = config.get('chemin_htk', 'chemin_config_hcopy')
@@ -33,13 +35,13 @@ def parseConfig(configFilePath) :
     TEST_MFCC_FOLDER       = config.get('chemin_test', 'chemin_dossier_mfcc_test')
     TEST_HDF5_FILE_PATH    = config.get('chemin_test', 'chemin_dossier_transcripts_test')
 
-    global AFFICHAGE
     AFFICHAGE = bool(config.get('param_pretraitement', 'affichage'))
     
     LANGUAGES = json.loads(config.get('liste_langages_formats', 'langues'))
     
     AUDIO_TYPES = json.loads(config.get('liste_langages_formats', 'formats_audio'))
     TRANSCRIPT_TYPES = json.loads(config.get('liste_langages_formats', 'formats_transcriptions'))
+
     
 #Gestion de l'OS
 linux=False
