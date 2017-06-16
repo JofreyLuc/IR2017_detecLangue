@@ -63,57 +63,55 @@ def setOS() :
 # Cherche le début et la fin de la coupe dans le fichier de transcription.
 # Retourne les temps de début et de fin de la coupe en secondes.
 # Format stm.
-def searchBeginAndEndStm(transFileName):
-    fileName = path.splitext(path.basename(transFileName))[0] # Nom du stm sans extension
+def searchBeginAndEndStm(transFilePath):
+    transFileName = path.splitext(path.basename(transFilePath))[0] # Nom du stm sans extension
     
     # On ouvre le fichier avec le bon encodage si celui-ci est précisé
-    if (path.isfile(path.join(path.dirname(transFileName), "encoding.txt"))):
-        e = open(path.join(path.dirname(transFileName), "encoding.txt"), 'r')
+    if (path.isfile(path.join(path.dirname(transFilePath), "encoding.txt"))):
+        e = open(path.join(path.dirname(transFilePath), "encoding.txt"), 'r')
         encod = e.readline()
-        f = open(transFileName, 'r', encoding=encod)
+        f = open(transFilePath, 'r', encoding=encod)
         e.close()
     else:
-        f = open(transFileName, 'r')
+        f = open(transFilePath, 'r')
 
     #Tant qu'on a pas une ligne de transcription (commencant par le nom de fichier) on lit en avancant
     currentLine = f.readline()
-    while (currentLine.split()[0] != fileName):
+    while (currentLine.split()[0] != transFileName):
         currentLine = f.readline()
 
     #Si la première ligne est un silence/musique, on prend comme début le timestamp de fin, sinon le timestamp de début
     if (currentLine.split()[2] == "inter_segment_gap"):
-        debut = float(currentLine.split()[4])
+        beginning = float(currentLine.split()[4])
     else:
-        debut = float(currentLine.split()[3])
+        beginning = float(currentLine.split()[3])
             
     #On va jusqu'à la fin du fichier en conservant la dernière ligne "correcte"
     nextLine = f.readline()
     while (nextLine != ''):
-        if (nextLine.split()[0] == fileName and nextLine.split()[2] != "inter_segment_gap"):
+        if (nextLine.split()[0] == transFileName and nextLine.split()[2] != "inter_segment_gap"):
             currentLine = nextLine
         nextLine = f.readline()
 
     #On prend la fin de la dernière phrase
-    fin = float(currentLine.split()[4])     
+    end = float(currentLine.split()[4])     
     
     f.close()
 
-    return (debut, fin)
+    return (beginning, end)
 
 # Cherche le début et la fin de la coupe dans le fichier de transcription.
 # Retourne les temps de début et de fin de la coupe en secondes.
 # Format mlfmanu.
-def searchBeginAndEndMlfmanu(transFileName):
-    fileName = path.splitext(path.basename(transFileName))[0] #Nom du fichier sans extension
-    
-    f = open(transFileName, 'r')
+def searchBeginAndEndMlfmanu(transFilePath):    
+    f = open(transFilePath, 'r')
     currentLine = f.readline()
     # On lit le fichier ligne par ligne tant qu'on a pas atteint une ligne non vide,
     # qui n'est pas un commentaire ou qui n'est pas un silence.
     while (currentLine[0] == "#" or currentLine[0] == "\"" or currentLine.split()[2] == "sil"):
         currentLine = f.readline()
 
-    debut = float(currentLine.split()[0]) / 10000000; #Conversion en secondes
+    beginning = float(currentLine.split()[0]) / 10000000; #Conversion en secondes
 
     nextLine = f.readline()
     # On lit ligne par ligne tant qu'on a pas atteint la dernière ligne (ligne de silence exclus)
@@ -122,91 +120,91 @@ def searchBeginAndEndMlfmanu(transFileName):
             currentLine = nextLine
         nextLine = f.readline()
             
-    fin = float(currentLine.split()[1]) / 10000000; #Conversion en secondes
+    end = float(currentLine.split()[1]) / 10000000; #Conversion en secondes
     
     f.close()
     
-    return (debut, fin)
+    return (beginning, end)
 
 # Coupe le fichier audio de cutBegin jusqu'à cutEnd (en secondes.)
-def cutAudioFile(audioFileName, transFileName, outputFileName, beginningTime=None, endTime=None):
-    extension = path.splitext(transFileName)[1]
+def cutAudioFile(audioFilePath, transFilePath, outputFilePath, beginningTime=None, endTime=None):
+    extension = path.splitext(transFilePath)[1]
     if (extension == ".stm"):
-        (debut, fin) = searchBeginAndEndStm(transFileName)
+        (beginning, end) = searchBeginAndEndStm(transFilePath)
     elif (extension == ".mlfmanu"):
-        (debut, fin) = searchBeginAndEndMlfmanu(transFileName)
+        (beginning, end) = searchBeginAndEndMlfmanu(transFilePath)
         
     # On prend les temps "les plus limitants"
-    if (beginningTime is not None and beginningTime > debut):
-        debut = beginningTime
-    if (endTime is not None and endTime < fin):
-        fin = endTime
+    if (beginningTime is not None and beginningTime > beginning):
+        beginning = beginningTime
+    if (endTime is not None and endTime < end):
+        end = endTime
 
     # Calcule la durée du fichier coupé puis le coupe
-    duration = fin - debut
+    duration = end - beginning
     try:
-        check_output("sox " + audioFileName + " " + outputFileName + " trim " + str(debut) + " " + str(duration), shell = True, stderr=STDOUT)
+        check_output("sox " + audioFilePath + " " + outputFilePath + " trim " + str(beginning) + " " + str(duration), shell = True, stderr=STDOUT)
     except CalledProcessError as exc:                                                                                          
         eprintCalledProcessError(exc, "à SOX")
         sys.exit(1)
     
 # Convertit un fichier en wav  
-def convertAudioFileToWav(audioFileName, wavFileName):
+def convertAudioFileToWav(audioFilePath, wavFilePath):
     try :
-        check_output("sox " + audioFileName + " " + wavFileName, shell = True, stderr=STDOUT)
+        check_output("sox " + audioFilePath + " " + wavFilePath, shell = True, stderr=STDOUT)
     except CalledProcessError as exc :                                                                                          
         eprintCalledProcessError(exc, "à SOX")
         sys.exit(1)
 
 # Paramétrise un fichier 
-def generateMfccFile(audioFileName, mfccFileName):
+def generateMfccFile(audioFilePath, mfccFilePath):
     if linux :
 	    hCopyCall = "./" + HCOPY_PATH
     elif windows :
 	    hCopyCall = HCOPY_PATH
-    check_output(hCopyCall + " -C " + HCOPY_CONFIG_FILE + " " + audioFileName + " " + mfccFileName, shell = True, stderr=STDOUT)
+    check_output(hCopyCall + " -C " + HCOPY_CONFIG_FILE + " " + audioFilePath + " " + mfccFilePath, shell = True, stderr=STDOUT)
 
 # Crée un fichier avec la sortie de HList sur un fichier mfcc
-def generateHListFromMfcc(mfccFileName, hListOutputFileName):
+def generateHListFromMfcc(mfccFilePath, hListOutputFilePath):
     if linux :
         hListCall = "./" + HLIST_PATH
     elif windows :
         hListCall = HLIST_PATH
-    check_output(hListCall + " -C " + HLIST_CONFIG_FILE + " " + mfccFileName + " >> " + hListOutputFileName, shell = True, stderr=STDOUT)  
+    check_output(hListCall + " -C " + HLIST_CONFIG_FILE + " " + mfccFilePath + " >> " + hListOutputFilePath, shell = True, stderr=STDOUT)  
 
 # Coupe un fichier puis crée le mfcc correspondant        
-def cutFileThenGenerateMfcc(audioFileName, mfccFileName, transFileName=None) :
+def cutFileThenGenerateMfcc(audioFilePath, mfccFilePath, transFilePath=None) :
 
     removeJustOne = False
     
-    audioPathWithoutExt = path.splitext(audioFileName)[0] #Chemin du fichier audio sans extension
+    audioPathWithoutExt = path.splitext(audioFilePath)[0] #Chemin du fichier audio sans extension
     
     #Conversion en wav (dans tous les cas)
-    wavFileName = audioPathWithoutExt + "_temp.wav"
-    convertAudioFileToWav(audioFileName, wavFileName)
+    wavFilePath = audioPathWithoutExt + "_temp.wav"
+    convertAudioFileToWav(audioFilePath, wavFilePath)
 
     #Coupe de l'audio
-    if (transFileName is not None) :
-        cutFileName = audioPathWithoutExt + "_trimmed.wav"
-        cutAudioFile(wavFileName, transFileName, cutFileName)
+    if (transFilePath is not None) :
+        cutFilePath = audioPathWithoutExt + "_trimmed.wav"
+        cutAudioFile(wavFilePath, transFilePath, cutFilePath)
     else :
-        cutFileName = wavFileName
+        cutFilePath = wavFilePath
         removeJustOne = True
         
     #Génération des mfcc
     try :
-        generateMfccFile(cutFileName, mfccFileName)
+        generateMfccFile(cutFilePath, mfccFilePath)
     except CalledProcessError as exc :
         eprintCalledProcessError(exc, "à HCopy (HTK)")
 
     #Suppression des fichiers de transition
-    if (not removeJustOne) : remove(wavFileName)
-    remove(cutFileName)
+    if (not removeJustOne) : remove(wavFilePath)
+    remove(cutFilePath)
     
 # Renvoie un bon fichier de transcript (si il existe)    
-def getValidTransFile(audioFileName, transFolderName):
-    transFile = path.join(transFolderName, path.splitext(path.basename(audioFileName))[0] + ".*")
-    transcripts = glob(transFile) #Liste des fichiers avec ce nom (sans extension)
+def getValidTransFile(audioFilePath, transFolderPath):
+    transFilePath = path.join(transFolderPath, path.splitext(path.basename(audioFilePath))[0] + ".*")
+    transcripts = glob(transFilePath) #Liste des fichiers avec ce nom (sans extension)
     #Si au moins un fichier de transcription existe
     for file in transcripts :
         ext = path.splitext(file)[1]
@@ -216,25 +214,25 @@ def getValidTransFile(audioFileName, transFolderName):
     return None
 
 #Script pour transformer un dossier de fichiers audio (et leur transcription) en fichiers .mfcc
-def generateMfccFolder(audioFolderName, destFolderName, transFolderName=None) :
+def generateMfccFolder(audioFolderPath, destFolderPath, transFolderPath=None) :
     
     #Pour tous les fichiers dans le répertoire audio
-    for audioFile in glob(path.join(audioFolderName, "*.*")) :
+    for audioFile in glob(path.join(audioFolderPath, "*.*")) :
         #Si le fichier est un fichier audio
         if (path.splitext(audioFile)[1] not in AUDIO_TYPES) :
             eprint("Format audio inconnu : " + audioFile)
             continue
         
         #Si on a des transcriptions
-        if (transFolderName is not None) :
-            transFileName = getValidTransFile(audioFile, transFolderName)
-            if (transFileName is None) :
-                eprint("Pas de fichier de transcription valide dans " + transFolderName + " pour : " + audioFile)
+        if (transFolderPath is not None) :
+            transFilePath = getValidTransFile(audioFile, transFolderPath)
+            if (transFilePath is None) :
+                eprint("Pas de fichier de transcription valide dans " + transFolderPath + " pour : " + audioFile)
         
         #Génération mfcc
-        mfccFileName = path.join(destFolderName, path.splitext(path.basename(audioFile))[0] + ".mfcc")
-        cutFileThenGenerateMfcc(audioFile, mfccFileName, transFileName)
-        if AFFICHAGE : print("Généré : " + mfccFileName)
+        mfccFilePath = path.join(destFolderPath, path.splitext(path.basename(audioFile))[0] + ".mfcc")
+        cutFileThenGenerateMfcc(audioFile, mfccFilePath, transFilePath)
+        if AFFICHAGE : print("Généré : " + mfccFilePath)
         
 #Script pour transformer tous les dossiers du corpus en fichiers mfcc
 def generateAllMfcc() :
@@ -251,11 +249,11 @@ def generateAllMfcc() :
                 generateMfccFolder(path.join(audioFolder, lang), path.join(mfccFolder, lang), path.join(transFolder, lang))
 
 # Ajoute un fichier mfcc dans un fichier hdf5
-def convertMfccToHdf5(mfccFileName, language, hdf5File) :
+def convertMfccToHdf5(mfccFilePath, language, hdf5FilePath) :
         
-    TEMP_FILE = path.join(path.dirname(mfccFileName), "HListTmp") #Fichier texte temporaire généré par HList
+    TEMP_FILE = path.join(path.dirname(mfccFilePath), "HListTmp") #Fichier texte temporaire généré par HList
         
-    generateHListFromMfcc(mfccFileName, TEMP_FILE)
+    generateHListFromMfcc(mfccFilePath, TEMP_FILE)
     
     ifile = open(TEMP_FILE, 'r') #Fichier d'entrée
     currentLine = ifile.readline()
@@ -279,17 +277,17 @@ def convertMfccToHdf5(mfccFileName, language, hdf5File) :
     
     npMfcc = np.asarray(mfcc)
     #création du conteneur HDF5
-    hdf5Out = h5py.File(hdf5File, "a")
+    hdf5Out = h5py.File(hdf5FilePath, "a")
     #on crée 1 dataset hdf5 pour ce fichier mfcc 
-    fileName = path.splitext(path.basename(mfccFileName))[0] #Nom du fichier sans extension
+    fileName = path.splitext(path.basename(mfccFilePath))[0] #Nom du fichier sans extension
     hdf5Out.create_dataset(fileName, data=npMfcc)
     hdf5Out.close()
 
 #Ajoute tous les fichiers mfcc d'un dossier dans un fichier hdf5
-def convertMfccFolderToHdf5(mfccFolderName, language, hdf5File):
-    standardFileName = path.join(mfccFolderName, "*.mfcc")
-    for mfccFile in glob(standardFileName) :
-        convertMfccToHdf5(mfccFile, language, hdf5File)
+def convertMfccFolderToHdf5(mfccFolderPath, language, hdf5FilePath):
+    standardFilePath = path.join(mfccFolderPath, "*.mfcc")
+    for mfccFile in glob(standardFilePath) :
+        convertMfccToHdf5(mfccFile, language, hdf5FilePath)
         if AFFICHAGE : print("Traité : " + mfccFile)
 
 #Ajoute tous les fichiers mfcc du corpus dans un fichier hdf5
