@@ -65,7 +65,7 @@ def setOS() :
 # Format stm.
 def searchBeginAndEndStm(transFileName):
     fileName = path.splitext(path.basename(transFileName))[0] # Nom du stm sans extension
-
+    
     # On ouvre le fichier avec le bon encodage si celui-ci est précisé
     if (path.isfile(path.join(path.dirname(transFileName), "encoding.txt"))):
         e = open(path.join(path.dirname(transFileName), "encoding.txt"), 'r')
@@ -176,7 +176,9 @@ def generateHListFromMfcc(mfccFileName, hListOutputFileName):
 
 # Coupe un fichier puis crée le mfcc correspondant        
 def cutFileThenGenerateMfcc(audioFileName, mfccFileName, transFileName=None) :
-        
+
+    removeJustOne = False
+    
     audioPathWithoutExt = path.splitext(audioFileName)[0] #Chemin du fichier audio sans extension
     
     #Conversion en wav (dans tous les cas)
@@ -187,9 +189,10 @@ def cutFileThenGenerateMfcc(audioFileName, mfccFileName, transFileName=None) :
     if (transFileName is not None) :
         cutFileName = audioPathWithoutExt + "_trimmed.wav"
         cutAudioFile(wavFileName, transFileName, cutFileName)
-    else:
+    else :
         cutFileName = wavFileName
-    
+        removeJustOne = True
+        
     #Génération des mfcc
     try :
         generateMfccFile(cutFileName, mfccFileName)
@@ -197,7 +200,7 @@ def cutFileThenGenerateMfcc(audioFileName, mfccFileName, transFileName=None) :
         eprintCalledProcessError(exc, "à HCopy (HTK)")
 
     #Suppression des fichiers de transition
-    remove(wavFileName)
+    if (not removeJustOne) : remove(wavFileName)
     remove(cutFileName)
     
 # Renvoie un bon fichier de transcript (si il existe)    
@@ -285,9 +288,9 @@ def convertMfccToHdf5(mfccFileName, language, hdf5File) :
 #Ajoute tous les fichiers mfcc d'un dossier dans un fichier hdf5
 def convertMfccFolderToHdf5(mfccFolderName, language, hdf5File):
     standardFileName = path.join(mfccFolderName, "*.mfcc")
-    for file in glob(standardFileName) :
-        convertMfccToHdf5(file, language, hdf5File)
-        if AFFICHAGE : print("Traité : " + file)
+    for mfccFile in glob(standardFileName) :
+        convertMfccToHdf5(mfccFile, language, hdf5File)
+        if AFFICHAGE : print("Traité : " + mfccFile)
 
 #Ajoute tous les fichiers mfcc du corpus dans un fichier hdf5
 def convertAllMfccToHdf5() :
