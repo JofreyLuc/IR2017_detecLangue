@@ -24,17 +24,17 @@ def parseConfig(configFilePath) :
     TRAIN_AUDIO_FOLDER      = config.get('chemin_train', 'chemin_dossier_audio_train')
     TRAIN_TRANSCRIPTS_FOLDER = config.get('chemin_train', 'chemin_dossier_transcripts_train')
     TRAIN_MFCC_FOLDER       = config.get('chemin_train', 'chemin_dossier_mfcc_train')
-    TRAIN_HDF5_FILE_PATH    = config.get('chemin_train', 'chemin_dossier_transcripts_train')
+    TRAIN_HDF5_FILE_PATH    = config.get('chemin_train', 'chemin_hdf5_train')
     
     DEV_AUDIO_FOLDER      = config.get('chemin_dev', 'chemin_dossier_audio_dev')
     DEV_TRANSCRIPTS_FOLDER = config.get('chemin_dev', 'chemin_dossier_transcripts_dev')
     DEV_MFCC_FOLDER       = config.get('chemin_dev', 'chemin_dossier_mfcc_dev')
-    DEV_HDF5_FILE_PATH    = config.get('chemin_dev', 'chemin_dossier_transcripts_dev')
+    DEV_HDF5_FILE_PATH    = config.get('chemin_dev', 'chemin_hdf5_dev')
     
     TEST_AUDIO_FOLDER      = config.get('chemin_test', 'chemin_dossier_audio_test')
     TEST_TRANSCRIPTS_FOLDER = config.get('chemin_test', 'chemin_dossier_transcripts_test')
     TEST_MFCC_FOLDER       = config.get('chemin_test', 'chemin_dossier_mfcc_test')
-    TEST_HDF5_FILE_PATH    = config.get('chemin_test', 'chemin_dossier_transcripts_test')
+    TEST_HDF5_FILE_PATH    = config.get('chemin_test', 'chemin_hdf5_test')
 
     AFFICHAGE = bool(config.get('param_pretraitement', 'affichage'))
     
@@ -68,7 +68,7 @@ def searchBeginAndEndStm(transFileName):
 
     # On ouvre le fichier avec le bon encodage si celui-ci est précisé
     if (path.isfile(path.join(path.dirname(transFileName), "encoding.txt"))):
-        e = open(path.join(path.dirname(transFileName) + "encoding.txt"), 'r')
+        e = open(path.join(path.dirname(transFileName), "encoding.txt"), 'r')
         encod = e.readline()
         f = open(transFileName, 'r', encoding=encod)
         e.close()
@@ -143,9 +143,9 @@ def cutAudioFile(audioFileName, transFileName, outputFileName, beginningTime=Non
         fin = endTime
 
     # Calcule la durée du fichier coupé puis le coupe
-    duration = cutEnd - cutBegin
+    duration = fin - debut
     try:
-        check_output("sox " + audioFileName + " " + cutFileName + " trim " + str(cutBegin) + " " + str(duration), shell = True, stderr=STDOUT)
+        check_output("sox " + audioFileName + " " + outputFileName + " trim " + str(debut) + " " + str(duration), shell = True, stderr=STDOUT)
     except CalledProcessError as exc:                                                                                          
         eprintCalledProcessError(exc, "à SOX")
         sys.exit(1)
@@ -189,7 +189,7 @@ def cutFileThenGenerateMfcc(audioFileName, mfccFileName, transFileName=None) :
         cutAudioFile(wavFileName, transFileName, cutFileName)
     else:
         cutFileName = wavFileName
-    sys.exit(0)
+    
     #Génération des mfcc
     try :
         generateMfccFile(cutFileName, mfccFileName)
@@ -250,10 +250,10 @@ def generateAllMfcc() :
 # Ajoute un fichier mfcc dans un fichier hdf5
 def convertMfccToHdf5(mfccFileName, language, hdf5File) :
         
-    TEMP_FILE = "HListTmp" #Fichier texte temporaire généré par HList
+    TEMP_FILE = path.join(path.dirname(mfccFileName), "HListTmp") #Fichier texte temporaire généré par HList
         
     generateHListFromMfcc(mfccFileName, TEMP_FILE)
-
+    
     ifile = open(TEMP_FILE, 'r') #Fichier d'entrée
     currentLine = ifile.readline()
     
@@ -284,9 +284,9 @@ def convertMfccToHdf5(mfccFileName, language, hdf5File) :
 
 #Ajoute tous les fichiers mfcc d'un dossier dans un fichier hdf5
 def convertMfccFolderToHdf5(mfccFolderName, language, hdf5File):
-    standardFileName = path.join(mfccFolderName + "*.mfcc")
+    standardFileName = path.join(mfccFolderName, "*.mfcc")
     for file in glob(standardFileName) :
-        convertMfccToHdf5.py(file, language, hdf5File)
+        convertMfccToHdf5(file, language, hdf5File)
         if AFFICHAGE : print("Traité : " + file)
 
 #Ajoute tous les fichiers mfcc du corpus dans un fichier hdf5
@@ -298,4 +298,4 @@ def convertAllMfccToHdf5() :
         if mfccFolder and hdf5FilePath: # Not None et not empty
             if path.isfile(hdf5FilePath) : remove(hdf5FilePath) 
             for lang in LANGUAGES :
-                convertMfccToHdf5(mfccFolder, str(LANGUAGES.index(lang)), hdf5FilePath)
+                convertMfccFolderToHdf5(path.join(mfccFolder, lang), str(LANGUAGES.index(lang)), hdf5FilePath)

@@ -1,5 +1,6 @@
 import pretraitement
 
-pretraitement.parseConfig('config.ini')
-pretraitement.generateAllMfcc()
+pretraitement.parseConfig('configPerso.ini')
+pretraitement.setOS()
+#pretraitement.generateAllMfcc()
 pretraitement.convertAllMfccToHdf5()
