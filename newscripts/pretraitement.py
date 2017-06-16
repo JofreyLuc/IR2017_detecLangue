@@ -82,9 +82,9 @@ def searchBeginAndEndStm(transFilePath):
 
     #Si la première ligne est un silence/musique, on prend comme début le timestamp de fin, sinon le timestamp de début
     if (currentLine.split()[2] == "inter_segment_gap"):
-        debut = float(currentLine.split()[4])
+        beginning = float(currentLine.split()[4])
     else:
-        debut = float(currentLine.split()[3])
+        beginning = float(currentLine.split()[3])
             
     #On va jusqu'à la fin du fichier en conservant la dernière ligne "correcte"
     nextLine = f.readline()
@@ -94,11 +94,11 @@ def searchBeginAndEndStm(transFilePath):
         nextLine = f.readline()
 
     #On prend la fin de la dernière phrase
-    fin = float(currentLine.split()[4])     
+    end = float(currentLine.split()[4])     
     
     f.close()
 
-    return (debut, fin)
+    return (beginning, end)
 
 # Cherche le début et la fin de la coupe dans le fichier de transcription.
 # Retourne les temps de début et de fin de la coupe en secondes.
@@ -111,7 +111,7 @@ def searchBeginAndEndMlfmanu(transFilePath):
     while (currentLine[0] == "#" or currentLine[0] == "\"" or currentLine.split()[2] == "sil"):
         currentLine = f.readline()
 
-    debut = float(currentLine.split()[0]) / 10000000; #Conversion en secondes
+    beginning = float(currentLine.split()[0]) / 10000000; #Conversion en secondes
 
     nextLine = f.readline()
     # On lit ligne par ligne tant qu'on a pas atteint la dernière ligne (ligne de silence exclus)
@@ -120,11 +120,11 @@ def searchBeginAndEndMlfmanu(transFilePath):
             currentLine = nextLine
         nextLine = f.readline()
             
-    fin = float(currentLine.split()[1]) / 10000000; #Conversion en secondes
+    end = float(currentLine.split()[1]) / 10000000; #Conversion en secondes
     
     f.close()
     
-    return (debut, fin)
+    return (beginning, end)
 
 # Coupe le fichier audio de cutBegin jusqu'à cutEnd (en secondes.)
 def cutAudioFile(audioFilePath, transFilePath, outputFilePath, beginningTimeMin=None, endTimeMin=None):
@@ -251,10 +251,9 @@ def generateAllMfcc() :
 # Ajoute un fichier mfcc dans un fichier hdf5
 def convertMfccToHdf5(mfccFilePath, language, hdf5FilePath) :
         
-    TEMP_FILE = "HListTmp" #Fichier texte temporaire généré par HList
+    TEMP_FILE = path.join(path.dirname(mfccFilePath), "HListTmp") #Fichier texte temporaire généré par HList
         
     generateHListFromMfcc(mfccFilePath, TEMP_FILE)
-
     ifile = open(TEMP_FILE, 'r') #Fichier d'entrée
     currentLine = ifile.readline()
     
