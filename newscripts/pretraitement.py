@@ -8,6 +8,7 @@ from subprocess import check_output, CalledProcessError, STDOUT
 from glob import glob
 import configparser
 import json
+from utils import eprint, eprintCalledProcessError
 
 def parseConfig(configFilePath) :
     config = configparser.ConfigParser()
@@ -49,6 +50,8 @@ windows=False
 
 # Met les variables d'OS à jour
 def setOS() :
+    global linux
+    global windows
     if (system() == "Linux") :
         linux = True
     elif (system() == "Windows") :
@@ -144,7 +147,7 @@ def cutAudioFile(audioFileName, transFileName, outputFileName, beginningTime=Non
     try:
         check_output("sox " + audioFileName + " " + cutFileName + " trim " + str(cutBegin) + " " + str(duration), shell = True, stderr=STDOUT)
     except CalledProcessError as exc:                                                                                          
-        utils.eprintCalledProcessError(exc, "à SOX")
+        eprintCalledProcessError(exc, "à SOX")
         sys.exit(1)
     
 # Convertit un fichier en wav  
@@ -152,7 +155,7 @@ def convertAudioFileToWav(audioFileName, wavFileName):
     try :
         check_output("sox " + audioFileName + " " + wavFileName, shell = True, stderr=STDOUT)
     except CalledProcessError as exc :                                                                                          
-        utils.eprintCalledProcessError(exc, "à SOX")
+        eprintCalledProcessError(exc, "à SOX")
         sys.exit(1)
 
 # Paramétrise un fichier 
@@ -174,31 +177,32 @@ def generateHListFromMfcc(mfccFileName, hListOutputFileName):
 # Coupe un fichier puis crée le mfcc correspondant        
 def cutFileThenGenerateMfcc(audioFileName, mfccFileName, transFileName=None) :
         
-    audioName = path.splitext(path.basename(audioFileName))[0] #Nom du fichier audio sans extension
+    audioPathWithoutExt = path.splitext(audioFileName)[0] #Chemin du fichier audio sans extension
     
     #Conversion en wav (dans tous les cas)
-    wavFileName = audioName + "_temp.wav"
+    wavFileName = audioPathWithoutExt + "_temp.wav"
     convertAudioFileToWav(audioFileName, wavFileName)
-    audioFileName = wavFileName
 
     #Coupe de l'audio
     if (transFileName is not None) :
-        cutFileName = path.splitext(audioName)[0] + "_trimmed.wav"
-        cutAudioFile(audioFileName, transFileName, cutFileName)
-
+        cutFileName = audioPathWithoutExt + "_trimmed.wav"
+        cutAudioFile(wavFileName, transFileName, cutFileName)
+    else:
+        cutFileName = wavFileName
+    sys.exit(0)
     #Génération des mfcc
     try :
         generateMfccFile(cutFileName, mfccFileName)
     except CalledProcessError as exc :
-        utils.eprintCalledProcessError(exc, "à HCopy (HTK)")
+        eprintCalledProcessError(exc, "à HCopy (HTK)")
 
     #Suppression des fichiers de transition
     remove(wavFileName)
     remove(cutFileName)
     
 # Renvoie un bon fichier de transcript (si il existe)    
-def getValidTransFile(audioFileName, transFolderName):  
-    transFile = transFolderName + path.splitext(path.basename(audioFile))[0] + ".*"
+def getValidTransFile(audioFileName, transFolderName):
+    transFile = path.join(transFolderName, path.splitext(path.basename(audioFileName))[0] + ".*")
     transcripts = glob(transFile) #Liste des fichiers avec ce nom (sans extension)
     #Si au moins un fichier de transcription existe
     for file in transcripts :
@@ -210,9 +214,9 @@ def getValidTransFile(audioFileName, transFolderName):
 
 #Script pour transformer un dossier de fichiers audio (et leur transcription) en fichiers .mfcc
 def generateMfccFolder(audioFolderName, destFolderName, transFolderName=None) :
-
+    
     #Pour tous les fichiers dans le répertoire audio
-    for audioFile in glob(audioFolderName + "*.*") :
+    for audioFile in glob(path.join(audioFolderName, "*.*")) :
         #Si le fichier est un fichier audio
         if (path.splitext(audioFile)[1] not in AUDIO_TYPES) :
             eprint("Format audio inconnu : " + audioFile)
@@ -222,26 +226,26 @@ def generateMfccFolder(audioFolderName, destFolderName, transFolderName=None) :
         if (transFolderName is not None) :
             transFileName = getValidTransFile(audioFile, transFolderName)
             if (transFileName is None) :
-                eprint("Pas de fichier de transcription valide pour : " + audioFile)
-                
+                eprint("Pas de fichier de transcription valide dans " + transFolderName + " pour : " + audioFile)
+        
         #Génération mfcc
-        mfccFileName = destFolderName + path.splitext(path.basename(audioFile))[0] + ".mfcc"
-        cutFileThenGenerateMfcc(audioFileName, mfccFileName, transFileName)
+        mfccFileName = path.join(destFolderName, path.splitext(path.basename(audioFile))[0] + ".mfcc")
+        cutFileThenGenerateMfcc(audioFile, mfccFileName, transFileName)
         if AFFICHAGE : print("Généré : " + mfccFileName)
         
 #Script pour transformer tous les dossiers du corpus en fichiers mfcc
 def generateAllMfcc() :
 
-    CORPUSES = [(TRAIN_AUDIO_FOLDER, TRAIN_TRANS_FOLDER, TRAIN_MFCC_FOLDER),
-                (DEV_AUDIO_FOLDER, DEV_TRANS_FOLDER, DEV_MFCC_FOLDER),
-                (TEST_AUDIO_FOLDER, TEST_TRANS_FOLDER, TEST_MFCC_FOLDER)]
+    CORPUSES = [(TRAIN_AUDIO_FOLDER, TRAIN_TRANSCRIPTS_FOLDER, TRAIN_MFCC_FOLDER),
+                (DEV_AUDIO_FOLDER, DEV_TRANSCRIPTS_FOLDER, DEV_MFCC_FOLDER),
+                (TEST_AUDIO_FOLDER, TEST_TRANSCRIPTS_FOLDER, TEST_MFCC_FOLDER)]
     
     for (audioFolder, transFolder, mfccFolder) in CORPUSES:
-        if (audioFolder is not None and mfccFolder is not None):
+        if audioFolder and mfccFolder : # not None and not empty
             if not path.exists(mfccFolder) : makedirs(mfccFolder)
             for lang in LANGUAGES :
                 if not path.exists(path.join(mfccFolder, lang)) : makedirs(path.join(mfccFolder, lang))
-                generateMfccFolder(audioFolder, mfccFolder, transFolder)
+                generateMfccFolder(path.join(audioFolder, lang), path.join(mfccFolder, lang), path.join(transFolder, lang))
 
 # Ajoute un fichier mfcc dans un fichier hdf5
 def convertMfccToHdf5(mfccFileName, language, hdf5File) :
@@ -291,7 +295,7 @@ def convertAllMfccToHdf5() :
     CORPUSES = [(TRAIN_MFCC_FOLDER, TRAIN_HDF5_FILE_PATH), (DEV_MFCC_FOLDER, DEV_HDF5_FILE_PATH), (TEST_MFCC_FOLDER, TEST_HDF5_FILE_PATH)]
     
     for (mfccFolder, hdf5FilePath) in CORPUSES:
-        if (mfccFolder is not None and hdf5FilePath is not None):
+        if mfccFolder and hdf5FilePath: # Not None et not empty
             if path.isfile(hdf5FilePath) : remove(hdf5FilePath) 
             for lang in LANGUAGES :
                 convertMfccToHdf5(mfccFolder, str(LANGUAGES.index(lang)), hdf5FilePath)
