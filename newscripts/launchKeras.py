@@ -8,6 +8,7 @@ import sys
 from os import remove, path
 from glob import glob
 import matplotlib.pyplot as plt
+import pretraitement
 
 # Paramètres
 #Affichage du traitement des données
@@ -164,6 +165,14 @@ if __name__ == '__main__':
     dataFileName = sys.argv[1]
     devFileName = sys.argv[2]
     testFileName = sys.argv[3]
+
+    # On récupère les paramètres de config
+    pretraitement.parseConfig('configPerso.ini')
+    global shift = pretraitement.SHIFT
+    global nbVal = pretraitement.NB_TRAMES
+    global nbEpochs = pretraitement.NB_EPOCHS
+    global nbSorties = len(pretraitement.LANGUAGES)
+    global AFFICHAGE = pretraitement.AFFICHAGE
     
     # On formatte les données
     (X, Y) = formatData(dataFileName, hdf5TmpPath="tr.hdf5")
@@ -199,9 +208,9 @@ if __name__ == '__main__':
     model.compile(loss='categorical_crossentropy', optimizer='RMSprop', metrics=['accuracy'])
 
     # On entraîne le modèle
-    history = model.fit(X, Y, epochs=100, batch_size=128, validation_data=(Xdev, Ydev), shuffle='batch')
+    history = model.fit(X, Y, epochs=nbEpochs, batch_size=128, validation_data=(Xdev, Ydev), shuffle='batch')
     
-    plt.plot(history.history['val_acc'])
+    '''plt.plot(history.history['val_acc'])
     plt.title('model accuracy')
     plt.ylabel('accuracy')
     plt.xlabel('epoch')
@@ -212,5 +221,5 @@ if __name__ == '__main__':
     generatePredict(model, 'hdf5Predict/Arabic', 'Arabic')
     generatePredict(model, 'hdf5Predict/English', 'English')
     generatePredict(model, 'hdf5Predict/French', 'French')
-    generatePredict(model, 'hdf5Predict/German', 'German')
+    generatePredict(model, 'hdf5Predict/German', 'German')'''
     
