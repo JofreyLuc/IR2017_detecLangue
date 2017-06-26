@@ -6,15 +6,24 @@ import h5py
 from platform import system             
 from subprocess import check_output, CalledProcessError, STDOUT     
 from glob import glob
+from utils import eprint, eprintCalledProcessError
 import configparser
 import json
-from utils import eprint, eprintCalledProcessError
+
+#Gestion de l'OS
+linux=False
+windows=False
 
 def parseConfig(configFilePath) :
     config = configparser.ConfigParser()
     config.read(configFilePath)
 
-    global HCOPY_PATH, HCOPY_CONFIG_FILE, HLIST_PATH, HLIST_CONFIG_FILE, TRAIN_AUDIO_FOLDER, TRAIN_TRANSCRIPTS_FOLDER, TRAIN_MFCC_FOLDER, TRAIN_HDF5_FILE_PATH, DEV_AUDIO_FOLDER, DEV_TRANSCRIPTS_FOLDER, DEV_MFCC_FOLDER, DEV_HDF5_FILE_PATH, TEST_AUDIO_FOLDER, TEST_TRANSCRIPTS_FOLDER, TEST_MFCC_FOLDER, TEST_HDF5_FILE_PATH, AFFICHAGE, LANGUAGES, AUDIO_TYPES, TRANSCRIPT_TYPES
+    global HCOPY_PATH, HCOPY_CONFIG_FILE, HLIST_PATH, HLIST_CONFIG_FILE
+    global TRAIN_AUDIO_FOLDER, TRAIN_TRANSCRIPTS_FOLDER, TRAIN_MFCC_FOLDER, TRAIN_HDF5_FILE_PATH
+    global DEV_AUDIO_FOLDER, DEV_TRANSCRIPTS_FOLDER, DEV_MFCC_FOLDER, DEV_HDF5_FILE_PATH
+    global TEST_AUDIO_FOLDER, TEST_TRANSCRIPTS_FOLDER, TEST_MFCC_FOLDER, TEST_HDF5_FILE_PATH
+    global AFFICHAGE, LANGUAGES, AUDIO_TYPES, TRANSCRIPT_TYPES
+    global SHIFT, NB_TRAMES, NB_EPOCHS
     
     HCOPY_PATH              = config.get('chemin_htk', 'chemin_executable_hcopy')
     HCOPY_CONFIG_FILE       = config.get('chemin_htk', 'chemin_config_hcopy')
@@ -46,10 +55,6 @@ def parseConfig(configFilePath) :
     SHIFT = config.get('param_reseau', 'decalage')
     NB_TRAMES = config.get('param_reseau', 'nombre_trames')
     NB_EPOCHS = config.get('param_reseau', 'nombre_epoch')
-    
-#Gestion de l'OS
-linux=False
-windows=False
 
 # Met les variables d'OS à jour
 def setOS() :
