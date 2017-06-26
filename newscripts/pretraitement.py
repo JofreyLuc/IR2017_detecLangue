@@ -35,14 +35,17 @@ def parseConfig(configFilePath) :
     TEST_TRANSCRIPTS_FOLDER = config.get('chemin_test', 'chemin_dossier_transcripts_test')
     TEST_MFCC_FOLDER       = config.get('chemin_test', 'chemin_dossier_mfcc_test')
     TEST_HDF5_FILE_PATH    = config.get('chemin_test', 'chemin_hdf5_test')
-
-    AFFICHAGE = bool(config.get('param_pretraitement', 'affichage'))
     
     LANGUAGES = json.loads(config.get('liste_langages_formats', 'langues'))
     
     AUDIO_TYPES = json.loads(config.get('liste_langages_formats', 'formats_audio'))
     TRANSCRIPT_TYPES = json.loads(config.get('liste_langages_formats', 'formats_transcriptions'))
 
+    AFFICHAGE = bool(config.get('param_pretraitement', 'affichage'))
+
+    SHIFT = config.get('param_reseau', 'decalage')
+    NB_TRAMES = config.get('param_reseau', 'nombre_trames')
+    NB_EPOCHS = config.get('param_reseau', 'nombre_epoch')
     
 #Gestion de l'OS
 linux=False
